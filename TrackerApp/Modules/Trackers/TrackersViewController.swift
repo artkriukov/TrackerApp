@@ -7,10 +7,39 @@
 
 import UIKit
 
-class TrackersViewController: UIViewController {
+final class TrackersViewController: UIViewController {
 
+    // MARK: - UI
+    private lazy var emptyStateView: UIStackView = {
+        guard let image = UIImage(named: ImageConstants.trackersEmptyImage) else {
+            return UIStackView()
+        }
+        let stackView = FactoryUI.shared.makeEmptyStateView(
+            image: image,
+            text: "Что будем отслеживать?"
+        )
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupViews()
+        setupConstraints()
+    }
+}
 
+private extension TrackersViewController {
+    func setupViews() {
+        view.addSubview(emptyStateView)
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
     }
 }

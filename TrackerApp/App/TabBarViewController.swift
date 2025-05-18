@@ -23,12 +23,12 @@ final class TabBarViewController: UITabBarController {
             configureNavBar(
                 with: trackersVC,
                 title: "Трекеры",
-                image: IconConstants.trackersIcon
+                image: ImageConstants.tabTrackersIcon
             ),
             configureTabBar(
                 with: statisticsVC,
                 title: "Статистика",
-                image: IconConstants.statisticsIcon
+                image: ImageConstants.tabStatsIcon
             ),
         ]
     }
@@ -48,7 +48,7 @@ final class TabBarViewController: UITabBarController {
         viewController.title = title
         
         let leftButton = UIBarButtonItem(
-            image: UIImage(named: IconConstants.addToDoButton),
+            image: UIImage(named: ImageConstants.navAddButtonIcon),
             style: .plain,
             target: self,
             action: nil // #selector(...)
@@ -72,3 +72,5 @@ final class TabBarViewController: UITabBarController {
         return viewController
     }
 }
+
+// использовать enum - case это экран если трэкер - то есть кнопка если сатистика но нет кнопки 

@@ -7,10 +7,39 @@
 
 import UIKit
 
-class StatisticsViewController: UIViewController {
+final class StatisticsViewController: UIViewController {
 
+    // MARK: - UI
+    private lazy var emptyStateView: UIStackView = {
+        guard let image = UIImage(named: ImageConstants.statsEmptyImage) else {
+            return UIStackView()
+        }
+        let stackView = FactoryUI.shared.makeEmptyStateView(
+            image: image,
+            text: "Анализировать пока нечего"
+        )
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupViews()
+        setupConstraints()
+    }
+}
 
+private extension StatisticsViewController {
+    func setupViews() {
+        view.addSubview(emptyStateView)
+    }
+    
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
     }
 }
