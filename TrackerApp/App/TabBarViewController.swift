@@ -7,6 +7,11 @@
 
 import UIKit
 
+enum Screens {
+    case trackers
+    case statistics
+}
+
 final class TabBarViewController: UITabBarController {
     
     override func viewDidLoad() {
@@ -22,11 +27,13 @@ final class TabBarViewController: UITabBarController {
         viewControllers = [
             configureNavBar(
                 with: trackersVC,
+                screen: .trackers,
                 title: "Трекеры",
                 image: ImageConstants.tabTrackersIcon
             ),
-            configureTabBar(
+            configureNavBar(
                 with: statisticsVC,
+                screen: .statistics,
                 title: "Статистика",
                 image: ImageConstants.tabStatsIcon
             ),
@@ -35,6 +42,7 @@ final class TabBarViewController: UITabBarController {
     
     private func configureNavBar(
         with viewController: UIViewController,
+        screen: Screens,
         title: String,
         image: String
     ) -> UIViewController {
@@ -47,30 +55,21 @@ final class TabBarViewController: UITabBarController {
         viewController.tabBarItem.image = UIImage(named: image)
         viewController.title = title
         
-        let leftButton = UIBarButtonItem(
-            image: UIImage(named: ImageConstants.navAddButtonIcon),
-            style: .plain,
-            target: self,
-            action: nil // #selector(...)
-        )
-        
-        leftButton.tintColor = .label
-        viewController.navigationItem.leftBarButtonItem = leftButton
+        switch screen {
+        case .trackers:
+            let leftButton = UIBarButtonItem(
+                image: UIImage(named: ImageConstants.navAddButtonIcon),
+                style: .plain,
+                target: self,
+                action: nil // #selector(...)
+            )
+            
+            leftButton.tintColor = .label
+            viewController.navigationItem.leftBarButtonItem = leftButton
+        case .statistics:
+            break
+        }
         
         return navController
     }
-    
-    private func configureTabBar(
-        with viewController: UIViewController,
-        title: String,
-        image: String
-    ) -> UIViewController {
-        
-        viewController.tabBarItem.title = title
-        viewController.tabBarItem.image = UIImage(named: image)
-        
-        return viewController
-    }
 }
-
-// использовать enum - case это экран если трэкер - то есть кнопка если сатистика но нет кнопки 
