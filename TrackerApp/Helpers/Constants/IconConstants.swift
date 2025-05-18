@@ -10,4 +10,5 @@ import UIKit
 enum IconConstants {
     static let trackersIcon = "TrackersIcon"
     static let statisticsIcon = "StatisticsIcon"
+    static let addToDoButton = "AddToDoButton"
 }

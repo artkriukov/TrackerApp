@@ -20,7 +20,7 @@ final class TabBarViewController: UITabBarController {
         let statisticsVC = StatisticsViewController()
         
         viewControllers = [
-            configureTabBar(
+            configureNavBar(
                 with: trackersVC,
                 title: "Трекеры",
                 image: IconConstants.trackersIcon
@@ -31,6 +31,33 @@ final class TabBarViewController: UITabBarController {
                 image: IconConstants.statisticsIcon
             ),
         ]
+    }
+    
+    private func configureNavBar(
+        with viewController: UIViewController,
+        title: String,
+        image: String
+    ) -> UIViewController {
+        
+        let navController = UINavigationController(rootViewController: viewController)
+        
+        navController.tabBarItem.title = title
+        navController.navigationBar.prefersLargeTitles = true
+        
+        viewController.tabBarItem.image = UIImage(named: image)
+        viewController.title = title
+        
+        let leftButton = UIBarButtonItem(
+            image: UIImage(named: IconConstants.addToDoButton),
+            style: .plain,
+            target: self,
+            action: nil // #selector(...)
+        )
+        
+        leftButton.tintColor = .label
+        viewController.navigationItem.leftBarButtonItem = leftButton
+        
+        return navController
     }
     
     private func configureTabBar(
