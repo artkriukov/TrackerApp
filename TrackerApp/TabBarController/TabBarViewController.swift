@@ -29,13 +29,13 @@ final class TabBarViewController: UITabBarController {
                 with: trackersVC,
                 screen: .trackers,
                 title: "Трекеры",
-                image: ImageConstants.tabTrackersIcon
+                image: UIConstants.Images.tabTrackersIcon
             ),
             configureNavBar(
                 with: statisticsVC,
                 screen: .statistics,
                 title: "Статистика",
-                image: ImageConstants.tabStatsIcon
+                image: UIConstants.Images.tabStatsIcon
             ),
         ]
     }
@@ -58,18 +58,40 @@ final class TabBarViewController: UITabBarController {
         switch screen {
         case .trackers:
             let leftButton = UIBarButtonItem(
-                image: UIImage(named: ImageConstants.navAddButtonIcon),
+                image: UIImage(named: UIConstants.Images.navAddButtonIcon),
                 style: .plain,
                 target: self,
-                action: nil // #selector(...)
+                action: #selector(presentTrackerTypeSelection)
             )
             
             leftButton.tintColor = .label
             viewController.navigationItem.leftBarButtonItem = leftButton
+            
+            let datePicker = makeDatePicker()
+            
+            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
+            
         case .statistics:
             break
         }
         
         return navController
+    }
+}
+
+private extension TabBarViewController {
+    func makeDatePicker() -> UIDatePicker {
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .compact
+        datePicker.locale = Locale(identifier: "ru_RU")
+        
+        return datePicker
+    }
+    
+    @objc func presentTrackerTypeSelection() {
+        let trackerTypeVC = TrackerTypeSelectionViewController()
+        let navController = UINavigationController(rootViewController: trackerTypeVC)
+        present(navController, animated: true)
     }
 }

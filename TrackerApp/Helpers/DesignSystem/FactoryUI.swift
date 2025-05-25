@@ -38,4 +38,20 @@ final class FactoryUI {
         
         return stack
     }
+    
+    func makeButton(
+        title: String,
+        backgroundColor: UIColor,
+        textColor: UIColor,
+        cornerRadius: CGFloat = 16,
+        tamic: Bool = false
+    ) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.backgroundColor = backgroundColor
+        button.layer.cornerRadius = cornerRadius
+        button.tintColor = textColor
+        button.translatesAutoresizingMaskIntoConstraints = tamic
+        return button
+    }
 }

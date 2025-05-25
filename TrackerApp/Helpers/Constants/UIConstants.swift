@@ -7,7 +7,27 @@
 
 import UIKit
 
-enum ColorConstants {
+enum UIConstants {
+    
+    enum MainColors {
+        static let mainBackground = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .light, .unspecified: UIColor(hexString: "#F2F2F7")
+            case .dark: UIColor(hexString: "#1A1B22")
+            @unknown default:
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+            }
+        }
+        
+        static let buttonColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .light, .unspecified: UIColor(hexString: "#1A1B22")
+            case .dark: UIColor(hexString: "#FFFFFF")
+            @unknown default:
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+            }
+        }
+    }
     
     enum SelectionColors {
         static let colorSelection1 = UIColor(hexString: "FD4C49")
@@ -28,6 +48,16 @@ enum ColorConstants {
         static let colorSelection16 = UIColor(hexString: "AD56DA")
         static let colorSelection17 = UIColor(hexString: "8D72E6")
         static let colorSelection108 = UIColor(hexString: "2FD058")
+    }
+    
+    enum Images {
+        static let tabTrackersIcon = "tab_trackers"
+        static let tabStatsIcon = "tab_stats"
+        static let navAddButtonIcon = "nav_add_button"
+        
+        static let searchEmptyImage = "search_empty_state"
+        static let trackersEmptyImage = "trackers_empty_state"
+        static let statsEmptyImage = "empty_stats_state"
     }
     
 }

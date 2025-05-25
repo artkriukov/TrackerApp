@@ -11,7 +11,7 @@ final class StatisticsViewController: UIViewController {
 
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
-        guard let image = UIImage(named: ImageConstants.statsEmptyImage) else {
+        guard let image = UIImage(named: UIConstants.Images.statsEmptyImage) else {
             return UIStackView()
         }
         let stackView = FactoryUI.shared.makeEmptyStateView(
@@ -33,6 +33,8 @@ final class StatisticsViewController: UIViewController {
 
 private extension StatisticsViewController {
     func setupViews() {
+        view.backgroundColor = UIConstants.MainColors.mainBackground
+        
         view.addSubview(emptyStateView)
     }
     
