@@ -27,6 +27,8 @@ enum UIConstants {
                 fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
             }
         }
+        
+        static let blueColor = UIColor(hexString: "#3772E7")
     }
     
     enum SelectionColors {

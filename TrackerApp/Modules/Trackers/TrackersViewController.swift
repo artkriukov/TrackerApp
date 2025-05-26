@@ -47,6 +47,15 @@ final class TrackersViewController: UIViewController {
         return element
     }()
     
+    private lazy var filterButton: UIButton = {
+        let element = UIButton(type: .custom)
+        element.setTitle("Фильтры", for: .normal)
+        element.layer.cornerRadius = 16
+        element.backgroundColor = UIConstants.MainColors.blueColor
+        element.translatesAutoresizingMaskIntoConstraints = false
+        return element
+    }()
+    
     // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +73,7 @@ private extension TrackersViewController {
         
         view.addSubview(emptyStateView)
         view.addSubview(trackersCollectionView)
+        view.addSubview(filterButton)
     }
     
     func setupConstraints() {
@@ -90,7 +100,13 @@ private extension TrackersViewController {
                 .constraint(
                     equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                     constant: -2
-                )
+                ),
+            
+            filterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filterButton.bottomAnchor
+                .constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filterButton.heightAnchor.constraint(equalToConstant: 50),
+            filterButton.widthAnchor.constraint(equalToConstant: 114),
         ])
     }
 }
