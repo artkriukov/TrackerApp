@@ -47,7 +47,7 @@ enum UIConstants {
         static let colorSelection15 = UIColor(hexString: "832CF1")
         static let colorSelection16 = UIColor(hexString: "AD56DA")
         static let colorSelection17 = UIColor(hexString: "8D72E6")
-        static let colorSelection108 = UIColor(hexString: "2FD058")
+        static let colorSelection18 = UIColor(hexString: "2FD058")
     }
     
     enum Images {
