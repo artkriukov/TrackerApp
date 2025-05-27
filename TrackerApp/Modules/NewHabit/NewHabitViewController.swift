@@ -137,7 +137,9 @@ final class NewHabitViewController: UIViewController {
     }
     
     @objc private func categoryButtonTapped() {
-        print("categoryButtonTapped")
+        let emptyCategoryVC = EmptyCategoryViewController()
+        let navController = UINavigationController(rootViewController: emptyCategoryVC)
+        present(navController, animated: true)
     }
     
     @objc private func scheduleButtonTapped() {

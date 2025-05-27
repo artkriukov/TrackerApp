@@ -32,6 +32,8 @@ final class FactoryUI {
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.text = text
+        label.numberOfLines = 2
+        label.widthAnchor.constraint(equalToConstant: 200).isActive = true
         
         stack.addArrangedSubview(imageView)
         stack.addArrangedSubview(label)
