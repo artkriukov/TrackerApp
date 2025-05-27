@@ -51,14 +51,14 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         let element = UILabel()
         element.text = "Кошка заслонила камеру на созвоне"
         element.numberOfLines = 2
-        element.font = .systemFont(ofSize: 12)
+        element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
     
     private lazy var actionStackView: UIStackView = {
         let element = UIStackView()
-        element.backgroundColor = UIConstants.MainColors.mainBackground
+        element.backgroundColor = UIConstants.MainColors.backgroundColor
         element.axis = .horizontal
         element.alignment = .center
         element.distribution = .fill
@@ -69,7 +69,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private lazy var trackedDaysCount: UILabel = {
         let element = UILabel()
         element.text = "5 дней"
-        element.font = .systemFont(ofSize: 12)
+        element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -79,6 +79,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         element.setTitle("+", for: .normal)
         element.backgroundColor = UIConstants.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
+        element.tintColor = UIColor.white
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()

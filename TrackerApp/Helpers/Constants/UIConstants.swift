@@ -10,7 +10,7 @@ import UIKit
 enum UIConstants {
     
     enum MainColors {
-        static let mainBackground = UIColor { traitCollection in
+        static let backgroundColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .light, .unspecified: UIColor(hexString: "#F2F2F7")
             case .dark: UIColor(hexString: "#1A1B22")

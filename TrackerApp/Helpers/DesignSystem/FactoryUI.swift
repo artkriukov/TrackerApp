@@ -51,6 +51,7 @@ final class FactoryUI {
         button.backgroundColor = backgroundColor
         button.layer.cornerRadius = cornerRadius
         button.tintColor = textColor
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.translatesAutoresizingMaskIntoConstraints = tamic
         return button
     }

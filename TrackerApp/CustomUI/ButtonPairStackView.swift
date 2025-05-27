@@ -12,6 +12,7 @@ final class ButtonPairStackView: UIStackView {
     private var primaryButton = UIButton()
     private var secondaryButton = UIButton()
     
+    private var primaryButtonAction: (() -> Void)?
     init(config: Configuration) {
         super.init(frame: .zero)
         
@@ -25,12 +26,20 @@ final class ButtonPairStackView: UIStackView {
     private func setup(config: Configuration) {
         self.axis = config.axis
         self.spacing = config.spacing
+        self.primaryButtonAction = config.primaryButtonAction
         
         primaryButton = FactoryUI.shared.makeButton(
             title: config.primaryButtonTitle,
             backgroundColor: config.backgroundColor,
             textColor: .white
         )
+        
+        primaryButton
+            .addTarget(
+                self,
+                action: #selector(handlePrimaryButtonTap),
+                for: .touchUpInside
+            )
         
         secondaryButton = FactoryUI.shared.makeButton(
             title: config.secondaryButtonTitle,
@@ -47,6 +56,10 @@ final class ButtonPairStackView: UIStackView {
             secondaryButton.heightAnchor.constraint(equalToConstant: config.heightButton),
         ])
     }
+    
+    @objc private func handlePrimaryButtonTap() {
+        primaryButtonAction?()
+    }
 }
 
 extension ButtonPairStackView {
@@ -57,5 +70,7 @@ extension ButtonPairStackView {
         let heightButton: CGFloat
         let axis: NSLayoutConstraint.Axis
         let spacing: CGFloat
+        
+        let primaryButtonAction: () -> Void
     }
 }

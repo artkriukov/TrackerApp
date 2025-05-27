@@ -18,7 +18,10 @@ final class TrackerTypeSelectionViewController: UIViewController {
             backgroundColor: UIConstants.MainColors.buttonColor,
             heightButton: 60,
             axis: .vertical,
-            spacing: 16
+            spacing: 16,
+            primaryButtonAction: { [weak self] in
+                self?.primaryActionButtonTapped()
+            }
         )
         
         let element = ButtonPairStackView(config: config)
@@ -39,11 +42,17 @@ final class TrackerTypeSelectionViewController: UIViewController {
     private func setupNavigation() {
         title = "Создание трекера"
     }
+    
+    private func primaryActionButtonTapped() {
+        let newHabbitVC = NewHabitViewController()
+        let navController = UINavigationController(rootViewController: newHabbitVC)
+        present(navController, animated: true)
+    }
 }
 
 private extension TrackerTypeSelectionViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackground
+        view.backgroundColor = UIConstants.MainColors.backgroundColor
         
         view.addSubview(buttonsStackView)
     }

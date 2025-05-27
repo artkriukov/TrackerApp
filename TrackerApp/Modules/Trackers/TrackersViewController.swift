@@ -42,7 +42,7 @@ final class TrackersViewController: UIViewController {
         element.dataSource = self
         element.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell)
         element.showsVerticalScrollIndicator = false
-        element.backgroundColor = UIConstants.MainColors.mainBackground
+        element.backgroundColor = UIConstants.MainColors.backgroundColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -51,6 +51,7 @@ final class TrackersViewController: UIViewController {
         let element = UIButton(type: .custom)
         element.setTitle("Фильтры", for: .normal)
         element.layer.cornerRadius = 16
+        element.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
         element.backgroundColor = UIConstants.MainColors.blueColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -69,7 +70,7 @@ final class TrackersViewController: UIViewController {
 
 private extension TrackersViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackground
+        view.backgroundColor = UIConstants.MainColors.backgroundColor
         
         view.addSubview(emptyStateView)
         view.addSubview(trackersCollectionView)
