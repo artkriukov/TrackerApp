@@ -43,6 +43,7 @@ final class FactoryUI {
         title: String,
         backgroundColor: UIColor,
         textColor: UIColor,
+        borderColor: UIColor? = nil,
         cornerRadius: CGFloat = 16,
         tamic: Bool = false
     ) -> UIButton {
@@ -52,6 +53,10 @@ final class FactoryUI {
         button.layer.cornerRadius = cornerRadius
         button.tintColor = textColor
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
+        if let borderColor {
+            button.layer.borderColor = borderColor.cgColor
+            button.layer.borderWidth = 1
+        }
         button.translatesAutoresizingMaskIntoConstraints = tamic
         return button
     }

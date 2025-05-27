@@ -42,7 +42,7 @@ final class TrackersViewController: UIViewController {
         element.dataSource = self
         element.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell)
         element.showsVerticalScrollIndicator = false
-        element.backgroundColor = UIConstants.MainColors.backgroundColor
+        element.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -70,7 +70,7 @@ final class TrackersViewController: UIViewController {
 
 private extension TrackersViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.backgroundColor
+        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         
         view.addSubview(emptyStateView)
         view.addSubview(trackersCollectionView)

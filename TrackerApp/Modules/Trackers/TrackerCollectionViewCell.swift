@@ -33,7 +33,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     }()
     private lazy var emojiContainerView: UIView = {
         let element = UIView()
-        element.backgroundColor = UIColor(hexString: "#B3FFFFFF")
+        element.backgroundColor = UIColor(hexString: "#FFFFFF", alpha: 0.3)
         element.layer.cornerRadius = 12
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -58,7 +58,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var actionStackView: UIStackView = {
         let element = UIStackView()
-        element.backgroundColor = UIConstants.MainColors.backgroundColor
+        element.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         element.axis = .horizontal
         element.alignment = .center
         element.distribution = .fill

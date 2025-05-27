@@ -33,7 +33,7 @@ final class StatisticsViewController: UIViewController {
 
 private extension StatisticsViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.backgroundColor
+        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         
         view.addSubview(emptyStateView)
     }
