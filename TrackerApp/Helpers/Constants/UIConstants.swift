@@ -21,7 +21,7 @@ enum UIConstants {
         
         static let secondaryBackgroundColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
-            case .light, .unspecified: UIColor(hexString: "#E6E8EB", alpha: 0.7)
+            case .light, .unspecified: UIColor(hexString: "#E6E8EB", alpha: 0.3)
             case .dark: UIColor(hexString: "##414141", alpha: 0.85)
             @unknown default:
                 fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
@@ -32,6 +32,15 @@ enum UIConstants {
             switch traitCollection.userInterfaceStyle {
             case .light, .unspecified: UIColor(hexString: "#1A1B22")
             case .dark: UIColor(hexString: "#FFFFFF")
+            @unknown default:
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+            }
+        }
+        
+        static let secondaryTextColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .light, .unspecified: UIColor(hexString: "#FFFFFF")
+            case .dark: UIColor(hexString: "#1A1B22")
             @unknown default:
                 fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
             }
@@ -48,6 +57,7 @@ enum UIConstants {
         
         static let blueColor = UIColor(hexString: "#3772E7")
         static let redColor = UIColor(hexString: "#F56B6C")
+        static let grayColor = UIColor(hexString: "#AEAFB4")
         static let separatorColor = UIColor(hexString: "#AEAFB4")
     }
     
@@ -80,6 +90,11 @@ enum UIConstants {
         static let searchEmptyImage = "search_empty_state"
         static let trackersEmptyImage = "trackers_empty_state"
         static let statsEmptyImage = "empty_stats_state"
+    }
+    
+    enum Icons {
+        static let chevronRight = UIImage(named: "chevron")
+        static let plusButton = UIImage(named: "plus")
     }
     
 }

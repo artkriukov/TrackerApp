@@ -22,7 +22,7 @@ final class TrackerTypeSelectionViewController: UIViewController {
         let habitButton = FactoryUI.shared.makeButton(
             title: "Привычка",
             backgroundColor: UIConstants.MainColors.buttonColor,
-            textColor: .white
+            textColor: UIConstants.MainColors.secondaryTextColor
         )
         habitButton.addTarget(
                 self,
@@ -36,7 +36,7 @@ final class TrackerTypeSelectionViewController: UIViewController {
     private lazy var irregularEventButton = FactoryUI.shared.makeButton(
         title: "Нерегулярное событие",
         backgroundColor: UIConstants.MainColors.buttonColor,
-        textColor: .white
+        textColor: UIConstants.MainColors.secondaryTextColor
     )
     
     // MARK: - Life Circle

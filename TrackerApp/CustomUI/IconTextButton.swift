@@ -34,8 +34,7 @@ final class IconTextButton: UIControl {
         imageView.image = configuration.image
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
-        
+        imageView.tintColor = UIConstants.MainColors.redColor
         
         NSLayoutConstraint.activate([
             textLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -43,8 +42,8 @@ final class IconTextButton: UIControl {
             
             imageView.topAnchor.constraint(equalTo: topAnchor),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.widthAnchor.constraint(equalToConstant: 24),
-            imageView.heightAnchor.constraint(equalToConstant: 24),
+            imageView.widthAnchor.constraint(equalToConstant: 7),
+            imageView.heightAnchor.constraint(equalToConstant: 12),
             
             heightAnchor.constraint(equalToConstant: 22)
         ])

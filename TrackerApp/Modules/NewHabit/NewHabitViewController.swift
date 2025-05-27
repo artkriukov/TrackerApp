@@ -22,15 +22,13 @@ final class NewHabitViewController: UIViewController {
         return element
     }()
     
-    private lazy var trackerTitleTextField: UITextField = {
-        let element = UITextField()
-        element.placeholder = "Введите название трекера"
-        element.backgroundColor = UIConstants.MainColors.secondaryBackgroundColor
-        element.layer.cornerRadius = 16
-        element.font = .systemFont(ofSize: 17, weight: .regular)
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: element.frame.height))
-        element.leftView = paddingView
-        element.leftViewMode = .always
+    private lazy var trackerTitleTextField: TextField = {
+        let config = TextField.Configuration(
+            placeholder: "Введите название трекера",
+            backgroundColor: UIConstants.MainColors.secondaryBackgroundColor
+        )
+        
+        let element = TextField(configuration: config)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -51,13 +49,18 @@ final class NewHabitViewController: UIViewController {
         return element
     }()
     
-    private lazy var categoryButton : IconTextButton = {
+    private lazy var categoryButton: IconTextButton = {
         let config = IconTextButton.Configuration(
             textLabel: "Категория",
-            image: UIImage(systemName: "chevron.right"),
+            image: UIConstants.Icons.chevronRight,
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
+        element.addTarget(
+                self,
+                action: #selector(categoryButtonTapped),
+                for: .touchUpInside
+            )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -65,10 +68,15 @@ final class NewHabitViewController: UIViewController {
     private lazy var scheduleButton: IconTextButton = {
         let config = IconTextButton.Configuration(
             textLabel: "Расписание",
-            image: UIImage(systemName: "chevron.right"),
+            image: UIConstants.Icons.chevronRight,
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
+        element.addTarget(
+                self,
+                action: #selector(scheduleButtonTapped),
+                for: .touchUpInside
+            )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -92,25 +100,25 @@ final class NewHabitViewController: UIViewController {
     private lazy var cancelButton: UIButton = {
         let cancelButton = FactoryUI.shared.makeButton(
             title: "Отменить",
-            backgroundColor: .white,
+            backgroundColor: .clear,
             textColor: UIConstants.MainColors.redColor,
             borderColor: UIConstants.MainColors.redColor
         )
         cancelButton.addTarget(
-                self,
-                action: #selector(cancelButtonTapped),
-                for: .touchUpInside
-            )
+            self,
+            action: #selector(cancelButtonTapped),
+            for: .touchUpInside
+        )
         return cancelButton
     }()
     
     
     private lazy var createButton = FactoryUI.shared.makeButton(
         title: "Создать",
-        backgroundColor: .gray,
+        backgroundColor: UIConstants.MainColors.grayColor,
         textColor: .white
     )
-
+    
     
     // MARK: - Life Circle
     override func viewDidLoad() {
@@ -126,6 +134,14 @@ final class NewHabitViewController: UIViewController {
     
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
+    }
+    
+    @objc private func categoryButtonTapped() {
+        print("categoryButtonTapped")
+    }
+    
+    @objc private func scheduleButtonTapped() {
+        print("scheduleButtonTapped")
     }
 }
 
@@ -148,8 +164,7 @@ private extension NewHabitViewController {
     }
     
     func setupConstraints() {
-        NSLayoutConstraint.activate(
-[
+        NSLayoutConstraint.activate([
             
             trackerTitleTextField.topAnchor
                 .constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
@@ -157,7 +172,6 @@ private extension NewHabitViewController {
                 .constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             trackerTitleTextField.trailingAnchor
                 .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            trackerTitleTextField.heightAnchor.constraint(equalToConstant: 75),
             
             topActionView.topAnchor
                 .constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 24),
@@ -184,7 +198,6 @@ private extension NewHabitViewController {
             
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             createButton.heightAnchor.constraint(equalToConstant: 60),
-        ]
-)
+        ])
     }
 }

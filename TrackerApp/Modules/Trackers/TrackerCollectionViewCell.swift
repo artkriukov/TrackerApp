@@ -51,6 +51,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         let element = UILabel()
         element.text = "Кошка заслонила камеру на созвоне"
         element.numberOfLines = 2
+        element.textColor = UIConstants.MainColors.secondaryTextColor
         element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -69,6 +70,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private lazy var trackedDaysCount: UILabel = {
         let element = UILabel()
         element.text = "5 дней"
+        element.textColor = UIConstants.MainColors.mainTextColor
         element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -76,10 +78,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var completeButton: UIButton = {
         let element = UIButton(type: .system)
-        element.setTitle("+", for: .normal)
+        element.setImage(UIConstants.Icons.plusButton, for: .normal)
         element.backgroundColor = UIConstants.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
-        element.tintColor = UIColor.white
+        element.tintColor = UIConstants.MainColors.secondaryTextColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
