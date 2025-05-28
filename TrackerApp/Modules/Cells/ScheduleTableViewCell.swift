@@ -40,14 +40,18 @@ final class ScheduleTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        customTextLabel.text = nil
+    }
+    
     func configureCell(with day: WeekDay) {
         selectionStyle = .none
         customTextLabel.text = day.rawValue
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-
+    func setSeparatorHidden(_ hidden: Bool) {
+        separator.isHidden = hidden
     }
 }
 

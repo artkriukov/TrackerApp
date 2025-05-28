@@ -105,6 +105,10 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
                 for: indexPath
             ) as? ScheduleTableViewCell else { return UITableViewCell() }
             
+            let isLast = indexPath.row == WeekDay.allCases.count - 1
+            let isOnly = WeekDay.allCases.count == 1
+            cell.setSeparatorHidden(isLast || isOnly)
+            
             cell.configureCell(with: WeekDay.allCases[indexPath.row])
             
             return cell
