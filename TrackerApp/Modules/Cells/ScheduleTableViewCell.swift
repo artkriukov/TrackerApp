@@ -21,6 +21,13 @@ final class ScheduleTableViewCell: UITableViewCell {
         return element
     }()
     
+    private lazy var separator: UIView = {
+        let element = UIView()
+        element.backgroundColor = UIConstants.MainColors.separatorColor
+        element.translatesAutoresizingMaskIntoConstraints = false
+        return element
+    }()
+    
     // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -34,7 +41,7 @@ final class ScheduleTableViewCell: UITableViewCell {
     }
     
     func configureCell() {
-        
+        selectionStyle = .none
     }
     
     override func prepareForReuse() {
@@ -50,6 +57,7 @@ private extension ScheduleTableViewCell {
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(customTextLabel)
         stackView.addArrangedSubview(switcher)
+        contentView.addSubview(separator)
         
         customTextLabel.text = "hello"
     }
@@ -62,6 +70,11 @@ private extension ScheduleTableViewCell {
             stackView.trailingAnchor
                 .constraint(equalTo: trailingAnchor, constant: -16),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -27),
+            
+            separator.heightAnchor.constraint(equalToConstant: 1),
+            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
 }

@@ -22,6 +22,7 @@ final class TrackerOptionsViewController: UIViewController {
         element.dataSource = self
         element.delegate = self
         element.isScrollEnabled = false
+        element.separatorStyle = .none
         element.rowHeight = UITableView.automaticDimension
         element.estimatedRowHeight = 75
         element.translatesAutoresizingMaskIntoConstraints = false
@@ -104,6 +105,7 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
                 withIdentifier: CollectionViewCellIdentifiers.scheduleTableViewCell,
                 for: indexPath
             ) as? ScheduleTableViewCell else { return UITableViewCell() }
+            
             
             
             return cell
