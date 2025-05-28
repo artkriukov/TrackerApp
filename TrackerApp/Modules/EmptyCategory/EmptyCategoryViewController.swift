@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EmptyCategoryViewController: UIViewController {
+final class EmptyCategoryViewController: UIViewController {
 
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {

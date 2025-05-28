@@ -143,7 +143,9 @@ final class NewHabitViewController: UIViewController {
     }
     
     @objc private func scheduleButtonTapped() {
-        print("scheduleButtonTapped")
+        let tackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
+        let navController = UINavigationController(rootViewController: tackerOptionsVC)
+        present(navController, animated: true)
     }
 }
 

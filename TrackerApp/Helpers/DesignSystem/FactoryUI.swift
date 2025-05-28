@@ -62,4 +62,21 @@ final class FactoryUI {
         button.translatesAutoresizingMaskIntoConstraints = tamic
         return button
     }
+    
+    func makeTextLabel() -> UILabel{
+        let label = UILabel()
+        label.textColor = UIConstants.MainColors.mainTextColor
+        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
+    func makeTrackerOptionsStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }
 }

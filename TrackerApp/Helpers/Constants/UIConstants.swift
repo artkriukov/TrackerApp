@@ -12,7 +12,7 @@ enum UIConstants {
     enum MainColors {
         static let mainBackgroundColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
-            case .light, .unspecified: UIColor(hexString: "#F2F2F7")
+            case .light, .unspecified: UIColor(hexString: "#FFFFFF")
             case .dark: UIColor(hexString: "#1A1B22")
             @unknown default:
                 fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")

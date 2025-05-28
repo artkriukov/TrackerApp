@@ -9,4 +9,6 @@ import Foundation
 
 enum CollectionViewCellIdentifiers {
     static let trackerCollectionViewCell = "TrackerCollectionViewCell"
+    static let scheduleTableViewCell = "ScheduleTableViewCell"
+    static let categoryTableViewCell = "CategoryTableViewCell"
 }
