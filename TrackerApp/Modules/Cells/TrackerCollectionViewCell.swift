@@ -9,6 +9,8 @@ import UIKit
 
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
+    // MARK: - Private Properties
+    private var trackerIsDone = false
     // MARK: - UI
     
     private lazy var trackerCardStackView: UIStackView = {
@@ -82,6 +84,11 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         element.backgroundColor = UIConstants.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
         element.tintColor = UIConstants.MainColors.secondaryTextColor
+        element.addTarget(
+            self,
+            action: #selector(completeButtonTapped),
+            for: .touchUpInside
+        )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -98,6 +105,19 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     func configureCell(with category: TrackerCategory) {
         
+    }
+    
+    // MARK: - Private Methods
+    @objc private func completeButtonTapped() {
+        if !trackerIsDone {
+            completeButton.setImage(UIConstants.Icons.doneTrackerButton, for: .normal)
+            completeButton.layer.opacity = 0.3
+            trackerIsDone.toggle()
+        } else {
+            completeButton.setImage(UIConstants.Icons.plusButton, for: .normal)
+            completeButton.layer.opacity = 1
+            trackerIsDone.toggle()
+        }
     }
 }
 
@@ -140,7 +160,7 @@ private extension TrackerCollectionViewCell {
             actionStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
             actionStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             actionStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-
+            
             completeButton.widthAnchor.constraint(equalToConstant: 34),
             completeButton.heightAnchor.constraint(equalToConstant: 34),
         ])

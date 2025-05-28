@@ -95,6 +95,7 @@ enum UIConstants {
     enum Icons {
         static let chevronRight = UIImage(named: "chevron")
         static let plusButton = UIImage(named: "plus")
+        static let doneTrackerButton = UIImage(named: "done_tracker")
     }
     
 }
