@@ -40,7 +40,13 @@ final class TrackersViewController: UIViewController {
         
         let element = UICollectionView(frame: .zero, collectionViewLayout: layout)
         element.dataSource = self
+        element.delegate = self
         element.register(TrackerCollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell)
+        element.register(
+            SupplementaryView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: CollectionViewCellIdentifiers.headerSupplementaryView
+        )
         element.showsVerticalScrollIndicator = false
         element.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         element.translatesAutoresizingMaskIntoConstraints = false
@@ -112,11 +118,12 @@ private extension TrackersViewController {
     }
 }
 
+// MARK: - UICollectionViewDataSource
 extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        8
+        1
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell,
@@ -125,6 +132,36 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         return cell
     }
-
     
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+        
+        let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: CollectionViewCellIdentifiers.headerSupplementaryView,
+            for: indexPath
+        ) as? SupplementaryView
+        
+        // Здесь вы можете настроить заголовок для конкретной секции
+        
+        return header ?? UICollectionReusableView()
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        1
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 20) // высота хедера
+    }
+    
+    // Дополнительно можно настроить отступы
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
 }
