@@ -15,7 +15,6 @@ enum TrackerOptionsMode {
 final class TrackerOptionsViewController: UIViewController {
     // MARK: - Private Properties
     private let mode: TrackerOptionsMode
-    
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let element = UITableView()
@@ -106,7 +105,7 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
                 for: indexPath
             ) as? ScheduleTableViewCell else { return UITableViewCell() }
             
-            
+            cell.configureCell(with: WeekDay.allCases[indexPath.row])
             
             return cell
             
