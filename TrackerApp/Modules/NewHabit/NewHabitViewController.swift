@@ -56,12 +56,11 @@ final class NewHabitViewController: UIViewController {
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
-        element.addAction(
-            UIAction {_ in 
-                self.categoryButtonTapped()
-            }, for: .touchUpInside
-        )
-
+        element.addTarget(
+                self,
+                action: #selector(categoryButtonTapped),
+                for: .touchUpInside
+            )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -73,12 +72,11 @@ final class NewHabitViewController: UIViewController {
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
-        element.addAction(
-            UIAction {_ in 
-                self.scheduleButtonTapped()
-            }, for: .touchUpInside
-        )
-
+        element.addTarget(
+                self,
+                action: #selector(scheduleButtonTapped),
+                for: .touchUpInside
+            )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -106,13 +104,11 @@ final class NewHabitViewController: UIViewController {
             textColor: UIConstants.MainColors.redColor,
             borderColor: UIConstants.MainColors.redColor
         )
-        
-        cancelButton.addAction(
-            UIAction {_ in 
-                self.cancelButtonTapped()
-            }, for: .touchUpInside
+        cancelButton.addTarget(
+            self,
+            action: #selector(cancelButtonTapped),
+            for: .touchUpInside
         )
-
         return cancelButton
     }()
     
@@ -136,17 +132,17 @@ final class NewHabitViewController: UIViewController {
         title = "Новая привычка"
     }
     
-    private func cancelButtonTapped() {
+    @objc private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
-    private func categoryButtonTapped() {
+    @objc private func categoryButtonTapped() {
         let emptyCategoryVC = EmptyCategoryViewController()
         let navController = UINavigationController(rootViewController: emptyCategoryVC)
         present(navController, animated: true)
     }
     
-    private func scheduleButtonTapped() {
+    @objc private func scheduleButtonTapped() {
         let tackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
         let navController = UINavigationController(rootViewController: tackerOptionsVC)
         present(navController, animated: true)
