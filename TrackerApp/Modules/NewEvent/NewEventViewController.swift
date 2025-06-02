@@ -16,6 +16,8 @@ final class NewEventViewController: UIViewController {
     
     private let mode: NewEventMode
     private let maxCharLimit = 1
+    
+    private var topActionViewTopConstraint: NSLayoutConstraint?
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
         let element = UIScrollView()
@@ -187,10 +189,14 @@ final class NewEventViewController: UIViewController {
         if text.count > maxCharLimit {
             UIView.animate(withDuration: 0.3) {
                 self.errorLabel.isHidden = false
+                self.topActionViewTopConstraint?.constant = 62
+                self.view.layoutIfNeeded()
             }
         } else {
             UIView.animate(withDuration: 0.3) {
                 self.errorLabel.isHidden = true
+                self.topActionViewTopConstraint?.constant = 24
+                self.view.layoutIfNeeded()
             }
         }
     }
@@ -212,6 +218,9 @@ private extension NewEventViewController {
         view.addSubview(bottomActionStackView)
         bottomActionStackView.addArrangedSubview(cancelButton)
         bottomActionStackView.addArrangedSubview(createButton)
+        
+        topActionViewTopConstraint = topActionView.topAnchor.constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 24)
+        topActionViewTopConstraint?.isActive = true
     }
     
     func setupConstraints() {
@@ -227,8 +236,8 @@ private extension NewEventViewController {
             errorLabel.topAnchor.constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 8),
             errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            topActionView.topAnchor
-                .constraint(equalTo: errorLabel.bottomAnchor, constant: 24),
+//            topActionView.topAnchor
+//                .constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 24),
             topActionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             topActionView.trailingAnchor
                 .constraint(equalTo: view.trailingAnchor, constant: -20),
