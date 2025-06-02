@@ -24,11 +24,12 @@ final class TrackerTypeSelectionViewController: UIViewController {
             backgroundColor: UIConstants.MainColors.buttonColor,
             textColor: UIConstants.MainColors.secondaryTextColor
         )
-        habitButton.addTarget(
-                self,
-                action: #selector(habitButtonTapped),
-                for: .touchUpInside
-            )
+        
+        habitButton.addAction(
+            UIAction {_ in 
+                self.habitButtonTapped()
+            }, for: .touchUpInside
+        )
         return habitButton
     }()
     
@@ -53,7 +54,7 @@ final class TrackerTypeSelectionViewController: UIViewController {
         title = "Создание трекера"
     }
     
-    @objc private func habitButtonTapped() {
+    private func habitButtonTapped() {
         let newHabbitVC = NewHabitViewController()
         let navController = UINavigationController(rootViewController: newHabbitVC)
         present(navController, animated: true)

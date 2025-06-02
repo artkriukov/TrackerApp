@@ -29,11 +29,12 @@ final class EmptyCategoryViewController: UIViewController {
             backgroundColor: UIConstants.MainColors.buttonColor,
             textColor: UIConstants.MainColors.secondaryTextColor
         )
-        element.addTarget(
-                self,
-                action: #selector(doneButtonTapped),
-                for: .touchUpInside
-            )
+        element.addAction(
+            UIAction {_ in 
+                self.doneButtonTapped()
+            }, for: .touchUpInside
+        )
+
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -49,7 +50,7 @@ final class EmptyCategoryViewController: UIViewController {
     
     // MARK: - Private Properties
     
-    @objc private func doneButtonTapped() {
+    private func doneButtonTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
         let navController = UINavigationController(rootViewController: categoryEditorVC)
         present(navController, animated: true)

@@ -84,11 +84,10 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         element.backgroundColor = UIConstants.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
         element.tintColor = UIConstants.MainColors.secondaryTextColor
-        element.addTarget(
-            self,
-            action: #selector(completeButtonTapped),
-            for: .touchUpInside
-        )
+        element.addAction(
+            UIAction { _ in
+                self.completeButtonTapped()
+            }, for: .touchUpInside)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -103,12 +102,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with category: TrackerCategory) {
-        
+    func configureCell(with category: Tracker) {
+        trackerCardStackView.backgroundColor = category.color
+        emojiLabel.text = category.emoji
+        trackerLabel.text = category.name
+        completeButton.backgroundColor = category.color
     }
     
     // MARK: - Private Methods
-    @objc private func completeButtonTapped() {
+    private func completeButtonTapped() {
         if !trackerIsDone {
             completeButton.setImage(UIConstants.Icons.doneTrackerButton, for: .normal)
             completeButton.layer.opacity = 0.3

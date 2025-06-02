@@ -35,11 +35,12 @@ final class TrackerOptionsViewController: UIViewController {
             textColor: UIConstants.MainColors.secondaryTextColor
         )
         
-        element.addTarget(
-            self,
-            action: #selector(actionButtonTapped),
-            for: .touchUpInside
+        element.addAction(
+            UIAction {_ in 
+                self.actionButtonTapped()
+            }, for: .touchUpInside
         )
+        
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -86,7 +87,7 @@ final class TrackerOptionsViewController: UIViewController {
         }
     }
     
-    @objc private func actionButtonTapped() {
+    private func actionButtonTapped() {
         print("actionButtonTapped")
     }
 }

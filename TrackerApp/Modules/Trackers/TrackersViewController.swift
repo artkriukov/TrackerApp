@@ -10,7 +10,28 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     // MARK: - Private Properties
-    private var categories: [TrackerCategory]?
+    private var categories: [TrackerCategory] = [
+        TrackerCategory(
+            title: "Some titele",
+            trackers: [Tracker(
+                id: UUID(),
+                name: "Some name",
+                color: .blue,
+                emoji: "🚀"
+                //    schedule: 5
+            )]
+        ),
+        TrackerCategory(
+            title: "Some titele2",
+            trackers: [Tracker(
+                id: UUID(),
+                name: "Some name2",
+                color: .red,
+                emoji: "🚀"
+                //    schedule: 5
+            )]
+        ),
+    ]
     
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
@@ -121,15 +142,19 @@ private extension TrackersViewController {
 // MARK: - UICollectionViewDataSource
 extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        1
+        categories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell,
             for: indexPath
-        )
+        ) as? TrackerCollectionViewCell else {
+            return UICollectionViewCell()
+        }
         
+        let tracker = categories[indexPath.section].trackers[indexPath.item]
+        cell.configureCell(with: tracker)
         return cell
     }
     
@@ -144,13 +169,13 @@ extension TrackersViewController: UICollectionViewDataSource {
             for: indexPath
         ) as? SupplementaryView
         
-        // Здесь вы можете настроить заголовок для конкретной секции
+        header?.titleLabel.text = categories[indexPath.section].title
         
         return header ?? UICollectionReusableView()
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
+        categories.count
     }
 }
 
