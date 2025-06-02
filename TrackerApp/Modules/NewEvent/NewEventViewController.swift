@@ -15,7 +15,7 @@ enum NewEventMode {
 final class NewEventViewController: UIViewController {
     
     private let mode: NewEventMode
-    
+    private let maxCharLimit = 1
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
         let element = UIScrollView()
@@ -36,6 +36,17 @@ final class NewEventViewController: UIViewController {
         )
         
         let element = TextField(configuration: config)
+        element.delegate = self
+        element.translatesAutoresizingMaskIntoConstraints = false
+        return element
+    }()
+    
+    private lazy var errorLabel: UILabel = {
+        let element = UILabel()
+        element.text = "Ограничение \(maxCharLimit) символ"
+        element.textColor = UIConstants.MainColors.redColor
+        element.font = .systemFont(ofSize: 17)
+        element.isHidden = true
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -171,6 +182,18 @@ final class NewEventViewController: UIViewController {
         let navController = UINavigationController(rootViewController: tackerOptionsVC)
         present(navController, animated: true)
     }
+    
+    private func updateErrorLabel(for text: String) {
+        if text.count > maxCharLimit {
+            UIView.animate(withDuration: 0.3) {
+                self.errorLabel.isHidden = false
+            }
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.errorLabel.isHidden = true
+            }
+        }
+    }
 }
 
 private extension NewEventViewController {
@@ -178,7 +201,7 @@ private extension NewEventViewController {
         view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         
         view.addSubview(trackerTitleTextField)
-        
+        view.addSubview(errorLabel)
         view.addSubview(topActionView)
         topActionView.addSubview(topActionStackView)
         
@@ -201,8 +224,11 @@ private extension NewEventViewController {
             trackerTitleTextField.trailingAnchor
                 .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
+            errorLabel.topAnchor.constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 8),
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             topActionView.topAnchor
-                .constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 24),
+                .constraint(equalTo: errorLabel.bottomAnchor, constant: 24),
             topActionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             topActionView.trailingAnchor
                 .constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -227,5 +253,16 @@ private extension NewEventViewController {
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             createButton.heightAnchor.constraint(equalToConstant: 60),
         ])
+    }
+}
+
+extension NewEventViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let currentText = textField.text,
+           let stringRange = Range(range, in: currentText) {
+            let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
+            updateErrorLabel(for: updatedText)
+        }
+        return true
     }
 }
