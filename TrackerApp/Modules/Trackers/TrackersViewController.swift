@@ -32,6 +32,8 @@ final class TrackersViewController: UIViewController {
             )]
         ),
     ]
+    private var currentDate: Date = Date()
+    private var completedTrackers: [TrackerRecord] = []
     
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
