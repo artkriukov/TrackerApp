@@ -19,26 +19,34 @@ final class TrackerTypeSelectionViewController: UIViewController {
     }()
     
     private lazy var habitButton: UIButton = {
-        let habitButton = FactoryUI.shared.makeButton(
+        let element = FactoryUI.shared.makeButton(
             title: "Привычка",
             backgroundColor: UIConstants.MainColors.buttonColor,
             textColor: UIConstants.MainColors.secondaryTextColor
         )
         
-        habitButton.addAction(
-            UIAction {_ in 
+        element.addAction(
+            UIAction {_ in
                 self.habitButtonTapped()
             }, for: .touchUpInside
         )
-        return habitButton
+        return element
     }()
     
-    
-    private lazy var irregularEventButton = FactoryUI.shared.makeButton(
-        title: "Нерегулярное событие",
-        backgroundColor: UIConstants.MainColors.buttonColor,
-        textColor: UIConstants.MainColors.secondaryTextColor
-    )
+    private lazy var irregularEventButton: UIButton = {
+        let element = FactoryUI.shared.makeButton(
+            title: "Нерегулярное событие",
+            backgroundColor: UIConstants.MainColors.buttonColor,
+            textColor: UIConstants.MainColors.secondaryTextColor
+        )
+        
+        element.addAction(
+            UIAction {_ in
+                self.irregularEventButtonTapped()
+            }, for: .touchUpInside
+        )
+        return element
+    }()
     
     // MARK: - Life Circle
     override func viewDidLoad() {
@@ -55,8 +63,14 @@ final class TrackerTypeSelectionViewController: UIViewController {
     }
     
     private func habitButtonTapped() {
-        let newHabbitVC = NewHabitViewController()
-        let navController = UINavigationController(rootViewController: newHabbitVC)
+        let newEventVC = NewEventViewController(mode: .newHabbit)
+        let navController = UINavigationController(rootViewController: newEventVC)
+        present(navController, animated: true)
+    }
+    
+    private func irregularEventButtonTapped() {
+        let newEventVC = NewEventViewController(mode: .irregularEvent)
+        let navController = UINavigationController(rootViewController: newEventVC)
         present(navController, animated: true)
     }
 }

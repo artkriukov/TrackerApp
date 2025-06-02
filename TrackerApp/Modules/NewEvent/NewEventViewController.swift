@@ -1,5 +1,5 @@
 //
-//  NewHabitViewController.swift
+//  NewEventViewController.swift
 //  TrackerApp
 //
 //  Created by Artem Kriukov on 27.05.2025.
@@ -7,7 +7,14 @@
 
 import UIKit
 
-final class NewHabitViewController: UIViewController {
+enum NewEventMode {
+    case newHabbit
+    case irregularEvent
+}
+
+final class NewEventViewController: UIViewController {
+    
+    private let mode: NewEventMode
     
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
@@ -56,11 +63,11 @@ final class NewHabitViewController: UIViewController {
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
-        element.addTarget(
-                self,
-                action: #selector(categoryButtonTapped),
-                for: .touchUpInside
-            )
+        element.addAction(
+            UIAction { _ in
+                self.categoryButtonTapped()
+            }, for: .touchUpInside
+        )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -72,11 +79,11 @@ final class NewHabitViewController: UIViewController {
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
-        element.addTarget(
-                self,
-                action: #selector(scheduleButtonTapped),
-                for: .touchUpInside
-            )
+        element.addAction(
+            UIAction { _ in
+                self.scheduleButtonTapped()
+            }, for: .touchUpInside
+        )
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -98,18 +105,18 @@ final class NewHabitViewController: UIViewController {
     }()
     
     private lazy var cancelButton: UIButton = {
-        let cancelButton = FactoryUI.shared.makeButton(
+        let element = FactoryUI.shared.makeButton(
             title: "Отменить",
             backgroundColor: .clear,
             textColor: UIConstants.MainColors.redColor,
             borderColor: UIConstants.MainColors.redColor
         )
-        cancelButton.addTarget(
-            self,
-            action: #selector(cancelButtonTapped),
-            for: .touchUpInside
+        element.addAction(
+            UIAction { _ in
+                self.cancelButtonTapped()
+            }, for: .touchUpInside
         )
-        return cancelButton
+        return element
     }()
     
     
@@ -119,37 +126,54 @@ final class NewHabitViewController: UIViewController {
         textColor: .white
     )
     
+    // MARK: - Init
+    init(mode: NewEventMode) {
+        self.mode = mode
+        super.init(nibName: nil, bundle: nil)
+        
+        checkMode()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
-        setupNavigation()
     }
     
-    private func setupNavigation() {
-        title = "Новая привычка"
+    private func checkMode() {
+        switch mode {
+        case .newHabbit:
+            title = "Новая привычка"
+        case .irregularEvent:
+            title = "Новое нерегулярное событие"
+            scheduleButton.isHidden = true
+            separatorView.isHidden = true
+        }
     }
     
-    @objc private func cancelButtonTapped() {
+    private func cancelButtonTapped() {
         dismiss(animated: true)
     }
     
-    @objc private func categoryButtonTapped() {
+    private func categoryButtonTapped() {
         let emptyCategoryVC = EmptyCategoryViewController()
         let navController = UINavigationController(rootViewController: emptyCategoryVC)
         present(navController, animated: true)
     }
     
-    @objc private func scheduleButtonTapped() {
+    private func scheduleButtonTapped() {
         let tackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
         let navController = UINavigationController(rootViewController: tackerOptionsVC)
         present(navController, animated: true)
     }
 }
 
-private extension NewHabitViewController {
+private extension NewEventViewController {
     func setupViews() {
         view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
         
