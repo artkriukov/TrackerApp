@@ -10,28 +10,8 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     // MARK: - Private Properties
-    private var categories: [TrackerCategory] = [
-        TrackerCategory(
-            title: "Some titele",
-            trackers: [Tracker(
-                id: UUID(),
-                name: "Some name",
-                color: .blue,
-                emoji: "🚀"
-                //    schedule: 5
-            )]
-        ),
-        TrackerCategory(
-            title: "Some titele2",
-            trackers: [Tracker(
-                id: UUID(),
-                name: "Some name2",
-                color: .red,
-                emoji: "🚀"
-                //    schedule: 5
-            )]
-        ),
-    ]
+    private(set) var categories: [TrackerCategory] = []
+    
     private var currentDate: Date = Date()
     private var completedTrackers: [TrackerRecord] = []
     
@@ -80,6 +60,7 @@ final class TrackersViewController: UIViewController {
         let element = UIButton(type: .custom)
         element.setTitle("Фильтры", for: .normal)
         element.layer.cornerRadius = 16
+        element.isHidden = true
         element.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
         element.backgroundColor = UIConstants.MainColors.blueColor
         element.translatesAutoresizingMaskIntoConstraints = false
@@ -94,6 +75,70 @@ final class TrackersViewController: UIViewController {
         
         setupViews()
         setupConstraints()
+        setupNavigation()
+        filterTrackers(for: currentDate)
+        updateEmptyStateVisibility()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func filterTrackers(for date: Date) {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: date)
+        let currentWeekDay = WeekDay.allCases[weekday - 1]
+        
+        let filteredCategories = categories.map { category in
+            let filteredTrackers = category.trackers.filter { tracker in
+                guard let schedule = tracker.schedule else { return true }
+                return schedule.contains(currentWeekDay)
+            }
+            return TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }.filter { !$0.trackers.isEmpty }
+        
+        categories = filteredCategories
+        trackersCollectionView.reloadData()
+        
+        updateEmptyStateVisibility()
+    }
+    
+    private func updateEmptyStateVisibility() {
+        let hasTrackers = !categories.isEmpty
+        emptyStateView.isHidden = hasTrackers
+        filterButton.isHidden = !hasTrackers
+        trackersCollectionView.isHidden = !hasTrackers
+        
+        print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
+        print("Number of categories: \(categories.count)")
+    }
+    
+    private func toggleTrackerCompletion(_ tracker: Tracker) {
+        let record = TrackerRecord(trackerId: tracker.id, date: currentDate)
+        
+        if let index = completedTrackers.firstIndex(where: { $0.trackerId == tracker.id && Calendar.current.isDate($0.date, inSameDayAs: currentDate) }) {
+            completedTrackers.remove(at: index)
+        } else {
+            guard currentDate <= Date() else { return } 
+            completedTrackers.append(record)
+        }
+        
+        trackersCollectionView.reloadData()
+    }
+    
+    private func setupNavigation() {
+        let addButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addTracker)
+        )
+        addButton.tintColor = .label
+        
+        navigationItem.leftBarButtonItem = addButton
+    }
+    
+    @objc private func addTracker() {
+        let typeSelectionVC = TrackerTypeSelectionViewController(trackersViewController: self)
+        let navController = UINavigationController(rootViewController: typeSelectionVC)
+        present(navController, animated: true)
     }
 }
 
@@ -156,7 +201,15 @@ extension TrackersViewController: UICollectionViewDataSource {
         }
         
         let tracker = categories[indexPath.section].trackers[indexPath.item]
-        cell.configureCell(with: tracker)
+        let isCompleted = completedTrackers.contains { record in
+            record.trackerId == tracker.id && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
+        }
+        let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
+        
+        cell.configureCell(with: tracker, isCompleted: isCompleted, completedDays: completedDays)
+        cell.completionHandler = { [weak self] in
+            self?.toggleTrackerCompletion(tracker)
+        }
         return cell
     }
     
@@ -190,5 +243,20 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     // Дополнительно можно настроить отступы
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+}
+
+extension TrackersViewController: NewEventViewControllerDelegate {
+    func didCreateTracker(_ tracker: Tracker, in categoryTitle: String) {
+        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
+            categories[index].trackers.append(tracker)
+        } else {
+            let category = TrackerCategory(title: categoryTitle, trackers: [tracker])
+            categories.append(category)
+        }
+        
+        filterTrackers(for: currentDate)
+        trackersCollectionView.reloadData()
+        updateEmptyStateVisibility()
     }
 }

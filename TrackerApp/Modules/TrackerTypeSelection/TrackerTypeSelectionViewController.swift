@@ -9,6 +9,8 @@ import UIKit
 
 final class TrackerTypeSelectionViewController: UIViewController {
     
+    private weak var trackersViewController: TrackersViewController?
+    
     // MARK: - UI
     private lazy var buttonsStackView: UIStackView = {
         let element = UIStackView()
@@ -48,6 +50,16 @@ final class TrackerTypeSelectionViewController: UIViewController {
         return element
     }()
     
+    // MARK: - Init
+    init(trackersViewController: TrackersViewController) {
+        self.trackersViewController = trackersViewController
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,12 +76,14 @@ final class TrackerTypeSelectionViewController: UIViewController {
     
     private func habitButtonTapped() {
         let newEventVC = NewEventViewController(mode: .newHabbit)
+        newEventVC.delegate = trackersViewController
         let navController = UINavigationController(rootViewController: newEventVC)
         present(navController, animated: true)
     }
     
     private func irregularEventButtonTapped() {
         let newEventVC = NewEventViewController(mode: .irregularEvent)
+        newEventVC.delegate = trackersViewController
         let navController = UINavigationController(rootViewController: newEventVC)
         present(navController, animated: true)
     }

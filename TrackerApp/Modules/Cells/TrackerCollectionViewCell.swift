@@ -11,6 +11,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Private Properties
     private var trackerIsDone = false
+    
+    var completionHandler: (() -> Void)?
     // MARK: - UI
     
     private lazy var trackerCardStackView: UIStackView = {
@@ -80,7 +82,6 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var completeButton: UIButton = {
         let element = UIButton(type: .system)
-        element.setImage(UIConstants.Icons.plusButton, for: .normal)
         element.backgroundColor = UIConstants.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
         element.tintColor = UIConstants.MainColors.secondaryTextColor
@@ -102,11 +103,17 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with category: Tracker) {
-        trackerCardStackView.backgroundColor = category.color
-        emojiLabel.text = category.emoji
-        trackerLabel.text = category.name
-        completeButton.backgroundColor = category.color
+    func configureCell(with tracker: Tracker, isCompleted: Bool, completedDays: Int) {
+        trackerCardStackView.backgroundColor = tracker.color
+        emojiLabel.text = tracker.emoji
+        trackerLabel.text = tracker.name
+        completeButton.backgroundColor = tracker.color
+        trackedDaysCount.text = "\(completedDays) дней"
+        
+        let image = isCompleted ? UIConstants.Icons.doneTrackerButton : UIConstants.Icons.plusButton
+        let resizedImage = resizeImage(image, to: CGSize(width: 10, height: 10))
+        completeButton.setImage(resizedImage, for: .normal)
+        completeButton.layer.opacity = isCompleted ? 0.3 : 1.0
     }
     
     // MARK: - Private Methods
@@ -120,6 +127,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
             completeButton.layer.opacity = 1
             trackerIsDone.toggle()
         }
+    }
+    
+    private func resizeImage(_ image: UIImage?, to size: CGSize) -> UIImage? {
+        guard let image = image else { return nil }
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        image.draw(in: CGRect(origin: .zero, size: size))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return resizedImage
     }
 }
 
@@ -159,7 +175,7 @@ private extension TrackerCollectionViewCell {
             trackerLabel.bottomAnchor.constraint(equalTo: trackerCardStackView.bottomAnchor, constant: -12),
             
             actionStackView.topAnchor.constraint(equalTo: trackerCardStackView.bottomAnchor),
-            actionStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 28),
+            actionStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             actionStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             actionStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             

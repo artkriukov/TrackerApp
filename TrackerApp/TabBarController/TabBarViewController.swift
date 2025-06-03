@@ -57,15 +57,6 @@ final class TabBarViewController: UITabBarController {
         
         switch screen {
         case .trackers:
-            let leftButton = UIBarButtonItem(
-                image: UIImage(named: UIConstants.Images.navAddButtonIcon),
-                style: .plain,
-                target: self,
-                action: #selector(presentTrackerTypeSelection)
-            )
-            
-            leftButton.tintColor = .label
-            viewController.navigationItem.leftBarButtonItem = leftButton
             
             let datePicker = makeDatePicker()
             
@@ -90,7 +81,9 @@ private extension TabBarViewController {
     }
     
     @objc func presentTrackerTypeSelection() {
-        let trackerTypeVC = TrackerTypeSelectionViewController()
+        let trackerTypeVC = TrackerTypeSelectionViewController(
+            trackersViewController: TrackersViewController()
+        )
         let navController = UINavigationController(rootViewController: trackerTypeVC)
         present(navController, animated: true)
     }

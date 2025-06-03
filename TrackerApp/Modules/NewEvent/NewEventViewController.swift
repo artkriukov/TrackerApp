@@ -12,12 +12,17 @@ enum NewEventMode {
     case irregularEvent
 }
 
+protocol NewEventViewControllerDelegate: AnyObject {
+    func didCreateTracker(_ tracker: Tracker, in categoryTitle: String)
+}
+
 final class NewEventViewController: UIViewController {
     
     private let mode: NewEventMode
     private let maxCharLimit = 1
     
     private var topActionViewTopConstraint: NSLayoutConstraint?
+    weak var delegate: NewEventViewControllerDelegate?
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
         let element = UIScrollView()
@@ -133,11 +138,13 @@ final class NewEventViewController: UIViewController {
     }()
     
     
-    private lazy var createButton = FactoryUI.shared.makeButton(
-        title: "Создать",
-        backgroundColor: UIConstants.MainColors.grayColor,
-        textColor: .white
-    )
+    private lazy var createButton: UIButton = {
+        let button = FactoryUI.shared.makeButton(title: "Создать", backgroundColor: UIConstants.MainColors.buttonColor, textColor: UIConstants.MainColors.secondaryTextColor)
+        button.addAction(UIAction { [weak self] _ in
+            self?.createTracker()
+        }, for: .touchUpInside)
+        return button
+    }()
     
     // MARK: - Init
     init(mode: NewEventMode) {
@@ -199,6 +206,22 @@ final class NewEventViewController: UIViewController {
                 self.view.layoutIfNeeded()
             }
         }
+    }
+    
+    private func createTracker() {
+        guard let name = trackerTitleTextField.text, !name.isEmpty else { return }
+        
+        let tracker = Tracker(
+            id: UUID(),
+            name: name,
+            color: .blue,
+            emoji: "😊",
+            schedule: mode == .newHabbit ? [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday] : nil
+        )
+        
+        let categoryTitle = "Категория по умолчанию" 
+        delegate?.didCreateTracker(tracker, in: categoryTitle)
+        
     }
 }
 
