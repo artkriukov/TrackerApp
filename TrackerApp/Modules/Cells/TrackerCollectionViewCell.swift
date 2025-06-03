@@ -119,14 +119,15 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     // MARK: - Private Methods
     private func completeButtonTapped() {
         if !trackerIsDone {
-            completeButton.setImage(UIConstants.Icons.doneTrackerButton, for: .normal)
+            let resizedDoneImage = resizeImage(UIConstants.Icons.doneTrackerButton, to: CGSize(width: 10, height: 10))
+            completeButton.setImage(resizedDoneImage, for: .normal)
             completeButton.layer.opacity = 0.3
-            trackerIsDone.toggle()
         } else {
-            completeButton.setImage(UIConstants.Icons.plusButton, for: .normal)
-            completeButton.layer.opacity = 1
-            trackerIsDone.toggle()
+            let resizedPlusImage = resizeImage(UIConstants.Icons.plusButton, to: CGSize(width: 10, height: 10))
+            completeButton.setImage(resizedPlusImage, for: .normal)
+            completeButton.layer.opacity = 1.0
         }
+        trackerIsDone.toggle()
     }
     
     private func resizeImage(_ image: UIImage?, to size: CGSize) -> UIImage? {
