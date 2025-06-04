@@ -228,7 +228,7 @@ final class NewEventViewController: UIViewController {
             name: name,
             color: .blue,
             emoji: "😊",
-            schedule: mode == .newHabbit ? [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday] : nil
+            schedule: mode == .newHabbit ? selectedDays : nil
         )
         
         let categoryTitle = "Категория по умолчанию" 

@@ -10,10 +10,20 @@ import UIKit
 final class TrackersViewController: UIViewController {
     
     // MARK: - Private Properties
-    private(set) var categories: [TrackerCategory] = []
-    
-    private var currentDate: Date = Date()
     private var completedTrackers: [TrackerRecord] = []
+    private var filteredCategories: [TrackerCategory] = []
+    
+    private var categories: [TrackerCategory] = [] {
+        didSet {
+            filterTrackers(for: currentDate)
+        }
+    }
+    
+    private var currentDate = Date() {
+        didSet {
+            filterTrackers(for: currentDate)
+        }
+    }
     
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
@@ -67,6 +77,20 @@ final class TrackersViewController: UIViewController {
         return element
     }()
     
+    private lazy var datePicker: UIDatePicker = {
+        let element = UIDatePicker()
+        element.datePickerMode = .date
+        element.preferredDatePickerStyle = .compact
+        element.locale = Locale(identifier: "ru_RU")
+        element.addAction(
+            UIAction { [weak self] _ in
+                self?.dateChanged()
+            }, for: .valueChanged
+        )
+        element.translatesAutoresizingMaskIntoConstraints = false
+        return element
+    }()
+    
     // MARK: - Life Circle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +100,6 @@ final class TrackersViewController: UIViewController {
         setupViews()
         setupConstraints()
         setupNavigation()
-        filterTrackers(for: currentDate)
         updateEmptyStateVisibility()
     }
     
@@ -85,26 +108,33 @@ final class TrackersViewController: UIViewController {
     private func filterTrackers(for date: Date) {
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: date)
-        let currentWeekDay = WeekDay.allCases[weekday - 1]
         
-        let filteredCategories = categories.map { category in
+        let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
+        let currentWeekDay = WeekDay.allCases[adjustedWeekday - 1]
+        
+        filteredCategories = categories.compactMap { category in
             let filteredTrackers = category.trackers.filter { tracker in
+                
                 guard let schedule = tracker.schedule else { return true }
+             
                 return schedule.contains(currentWeekDay)
             }
-            return TrackerCategory(title: category.title, trackers: filteredTrackers)
-        }.filter { !$0.trackers.isEmpty }
+            
+            return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }
         
-        categories = filteredCategories
         trackersCollectionView.reloadData()
-        
         updateEmptyStateVisibility()
     }
     
+    private func dateChanged() {
+        currentDate = datePicker.date
+    }
+    
     private func updateEmptyStateVisibility() {
-        let hasTrackers = !categories.isEmpty
+        let hasTrackers = !filteredCategories.isEmpty
         emptyStateView.isHidden = hasTrackers
-        filterButton.isHidden = !hasTrackers
+        //        filterButton.isHidden = !hasTrackers
         trackersCollectionView.isHidden = !hasTrackers
         
         print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
@@ -117,7 +147,7 @@ final class TrackersViewController: UIViewController {
         if let index = completedTrackers.firstIndex(where: { $0.trackerId == tracker.id && Calendar.current.isDate($0.date, inSameDayAs: currentDate) }) {
             completedTrackers.remove(at: index)
         } else {
-            guard currentDate <= Date() else { return } 
+            guard currentDate <= Date() else { return }
             completedTrackers.append(record)
         }
         
@@ -133,6 +163,8 @@ final class TrackersViewController: UIViewController {
         addButton.tintColor = .label
         
         navigationItem.leftBarButtonItem = addButton
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
     }
     
     @objc private func addTracker() {
@@ -189,7 +221,7 @@ private extension TrackersViewController {
 // MARK: - UICollectionViewDataSource
 extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        categories[section].trackers.count
+        filteredCategories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -200,7 +232,7 @@ extension TrackersViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        let tracker = categories[indexPath.section].trackers[indexPath.item]
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
         let isCompleted = completedTrackers.contains { record in
             record.trackerId == tracker.id && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
         }
@@ -210,6 +242,7 @@ extension TrackersViewController: UICollectionViewDataSource {
         cell.completionHandler = { [weak self] in
             self?.toggleTrackerCompletion(tracker)
         }
+        
         return cell
     }
     
@@ -230,7 +263,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        categories.count
+        filteredCategories.count
     }
 }
 

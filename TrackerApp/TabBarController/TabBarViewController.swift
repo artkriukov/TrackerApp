@@ -57,11 +57,7 @@ final class TabBarViewController: UITabBarController {
         
         switch screen {
         case .trackers:
-            
-            let datePicker = makeDatePicker()
-            
-            viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: datePicker)
-            
+            break
         case .statistics:
             break
         }
@@ -71,14 +67,6 @@ final class TabBarViewController: UITabBarController {
 }
 
 private extension TabBarViewController {
-    func makeDatePicker() -> UIDatePicker {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .compact
-        datePicker.locale = Locale(identifier: "ru_RU")
-        
-        return datePicker
-    }
     
     @objc func presentTrackerTypeSelection() {
         let trackerTypeVC = TrackerTypeSelectionViewController(
