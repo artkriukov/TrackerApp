@@ -7,12 +7,21 @@
 
 import UIKit
 
+protocol TrackerCollectionViewCellDelegate: AnyObject {
+    func completeTracker(id: String)
+    func uncompleteTracker(id: String)
+}
+
 final class TrackerCollectionViewCell: UICollectionViewCell {
     
     // MARK: - Private Properties
     private var trackerIsDone = false
+    private var tracker: Tracker?
+    private var currentDate = Date()
+    private var isCompletedToday = false
     
     var completionHandler: (() -> Void)?
+    weak var delegate: TrackerCollectionViewCellDelegate?
     // MARK: - UI
     
     private lazy var trackerCardStackView: UIStackView = {
@@ -104,21 +113,48 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell(with tracker: Tracker, isCompleted: Bool, completedDays: Int) {
+    func configureCell(
+        with tracker: Tracker,
+        isCompletedToday: Bool,
+        completedDays: Int,
+        currentDate: Date
+    ) {
+        self.tracker = tracker
+        self.currentDate = currentDate
+        self.isCompletedToday = isCompletedToday
+        
         trackerCardStackView.backgroundColor = tracker.color
         emojiLabel.text = tracker.emoji
         trackerLabel.text = tracker.name
         completeButton.backgroundColor = tracker.color
-        trackedDaysCount.text = "\(completedDays) дней"
+        trackedDaysCount.text = String.localizedStringWithFormat(
+            NSLocalizedString("%d days", comment: ""),
+            completedDays
+        )
         
-        let image = isCompleted ? UIConstants.Icons.doneTrackerButton : UIConstants.Icons.plusButton
+        let image = isCompletedToday ?
+        UIConstants.Icons.doneTrackerButton :
+        UIConstants.Icons.plusButton
         let resizedImage = resizeImage(image, to: CGSize(width: 10, height: 10))
         completeButton.setImage(resizedImage, for: .normal)
-        completeButton.layer.opacity = isCompleted ? 0.3 : 1.0
+        completeButton.layer.opacity = isCompletedToday ? 0.3 : 1
     }
     
     // MARK: - Private Methods
     private func completeButtonTapped() {
+        guard let trackerId = tracker?.id else { return }
+        
+        if isCompletedToday {
+            delegate?.uncompleteTracker(id: trackerId.uuidString)
+        } else {
+            guard currentDate <= Date() else { return }
+            delegate?.completeTracker(id: trackerId.uuidString)
+        }
+        
+        resizedButton()
+    }
+    
+    private func resizedButton() {
         if !trackerIsDone {
             let resizedDoneImage = resizeImage(UIConstants.Icons.doneTrackerButton, to: CGSize(width: 10, height: 10))
             completeButton.setImage(resizedDoneImage, for: .normal)
@@ -140,6 +176,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         return resizedImage
     }
 }
+
+
 
 private extension TrackerCollectionViewCell {
     func setupViews() {

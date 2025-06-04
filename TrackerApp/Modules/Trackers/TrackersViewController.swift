@@ -174,6 +174,23 @@ final class TrackersViewController: UIViewController {
     }
 }
 
+extension TrackersViewController: TrackerCollectionViewCellDelegate {
+    func completeTracker(id: String) {
+        guard let uuid = UUID(uuidString: id) else { return }
+        let record = TrackerRecord(trackerId: uuid, date: currentDate)
+        completedTrackers.append(record)
+        trackersCollectionView.reloadData()
+    }
+    
+    func uncompleteTracker(id: String) {
+        guard let uuid = UUID(uuidString: id) else { return }
+        completedTrackers.removeAll { record in
+            record.trackerId == uuid && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
+        }
+        trackersCollectionView.reloadData()
+    }
+}
+
 private extension TrackersViewController {
     func setupViews() {
         view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
@@ -228,21 +245,21 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: CollectionViewCellIdentifiers.trackerCollectionViewCell,
             for: indexPath
-        ) as? TrackerCollectionViewCell else {
-            return UICollectionViewCell()
-        }
+        ) as? TrackerCollectionViewCell else { return UICollectionViewCell() }
         
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
-        let isCompleted = completedTrackers.contains { record in
+        let isCompletedToday = completedTrackers.contains { record in
             record.trackerId == tracker.id && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
         }
         let completedDays = completedTrackers.filter { $0.trackerId == tracker.id }.count
         
-        cell.configureCell(with: tracker, isCompleted: isCompleted, completedDays: completedDays)
-        cell.completionHandler = { [weak self] in
-            self?.toggleTrackerCompletion(tracker)
-        }
-        
+        cell.configureCell(
+            with: tracker,
+            isCompletedToday: isCompletedToday,
+            completedDays: completedDays,
+            currentDate: currentDate
+        )
+        cell.delegate = self
         return cell
     }
     
