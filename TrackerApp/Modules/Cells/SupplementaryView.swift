@@ -12,7 +12,7 @@ final class SupplementaryView: UICollectionReusableView {
         let element = UILabel()
         element.text = "Домашний уют"
         element.font = .systemFont(ofSize: 19, weight: .bold)
-        element.textColor = UIConstants.MainColors.mainTextColor
+        element.textColor = Asset.MainColors.mainTextColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()

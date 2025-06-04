@@ -21,7 +21,7 @@ final class CategoryEditorViewController: UIViewController {
     private lazy var textField: TextField = {
         let config = TextField.Configuration(
             placeholder: "Введите название категории",
-            backgroundColor: UIConstants.MainColors.secondaryBackgroundColor
+            backgroundColor: Asset.MainColors.secondaryBackgroundColor
         )
         
         let element = TextField(configuration: config)
@@ -31,8 +31,8 @@ final class CategoryEditorViewController: UIViewController {
     
     private lazy var doneButton = FactoryUI.shared.makeButton(
         title: "Готово",
-        backgroundColor: UIConstants.MainColors.buttonColor,
-        textColor: UIConstants.MainColors.secondaryTextColor
+        backgroundColor: Asset.MainColors.buttonColor,
+        textColor: Asset.MainColors.secondaryTextColor
     )
     
     // MARK: - Init
@@ -56,7 +56,7 @@ final class CategoryEditorViewController: UIViewController {
 
 private extension CategoryEditorViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         view.addSubview(textField)
         view.addSubview(doneButton)
     }

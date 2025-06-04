@@ -33,8 +33,8 @@ final class TrackerOptionsViewController: UIViewController {
     private lazy var actionButton: UIButton = {
         let element = FactoryUI.shared.makeButton(
             title: "",
-            backgroundColor: UIConstants.MainColors.buttonColor,
-            textColor: UIConstants.MainColors.secondaryTextColor
+            backgroundColor: Asset.MainColors.buttonColor,
+            textColor: Asset.MainColors.secondaryTextColor
         )
         
         element.addAction(
@@ -176,7 +176,7 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
 
 extension TrackerOptionsViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
         view.addSubview(tableView)
         view.addSubview(actionButton)

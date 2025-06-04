@@ -19,14 +19,14 @@ final class ScheduleTableViewCell: UITableViewCell {
     
     private lazy var switcher: UISwitch = {
         let element = UISwitch()
-        element.onTintColor = UIConstants.MainColors.blueColor
+        element.onTintColor = Asset.MainColors.blueColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
     
     private lazy var separator: UIView = {
         let element = UIView()
-        element.backgroundColor = UIConstants.MainColors.separatorColor
+        element.backgroundColor = Asset.MainColors.separatorColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -70,7 +70,7 @@ final class ScheduleTableViewCell: UITableViewCell {
 
 private extension ScheduleTableViewCell {
     func setupViews() {
-        backgroundColor = UIConstants.MainColors.secondaryBackgroundColor
+        backgroundColor = Asset.MainColors.secondaryBackgroundColor
         
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(customTextLabel)

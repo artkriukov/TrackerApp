@@ -11,7 +11,7 @@ final class EmptyCategoryViewController: UIViewController {
 
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
-        guard let image = UIImage(named: UIConstants.Images.trackersEmptyImage) else {
+        guard let image = UIImage(named: Asset.Images.trackersEmptyImage) else {
             return UIStackView()
         }
         let element = FactoryUI.shared.makeEmptyStateView(
@@ -26,8 +26,8 @@ final class EmptyCategoryViewController: UIViewController {
     private lazy var doneButton: UIButton = {
         let element = FactoryUI.shared.makeButton(
             title: "Добавить категорию",
-            backgroundColor: UIConstants.MainColors.buttonColor,
-            textColor: UIConstants.MainColors.secondaryTextColor
+            backgroundColor: Asset.MainColors.buttonColor,
+            textColor: Asset.MainColors.secondaryTextColor
         )
         element.addAction(
             UIAction {_ in 
@@ -59,7 +59,7 @@ final class EmptyCategoryViewController: UIViewController {
 
 private extension EmptyCategoryViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
         view.addSubview(emptyStateView)
         view.addSubview(doneButton)

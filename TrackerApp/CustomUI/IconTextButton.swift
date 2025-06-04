@@ -38,19 +38,19 @@ final class IconTextButton: UIControl {
         
         textLabel.text = configuration.textLabel
         textLabel.font = .systemFont(ofSize: 17, weight: .regular)
-        textLabel.textColor = UIConstants.MainColors.mainTextColor
+        textLabel.textColor = Asset.MainColors.mainTextColor
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         
         subtitleLabel.text = configuration.subtitle
         subtitleLabel.font = .systemFont(ofSize: 17, weight: .regular)
-        subtitleLabel.textColor = UIConstants.MainColors.grayColor
+        subtitleLabel.textColor = Asset.MainColors.grayColor
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.isHidden = configuration.subtitle == nil
         
         imageView.image = configuration.image
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.tintColor = UIConstants.MainColors.redColor
+        imageView.tintColor = Asset.MainColors.redColor
         
         NSLayoutConstraint.activate([
             textLabel.leadingAnchor.constraint(equalTo: leadingAnchor),

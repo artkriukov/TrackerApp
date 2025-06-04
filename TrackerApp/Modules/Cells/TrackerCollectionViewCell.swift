@@ -26,7 +26,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var trackerCardStackView: UIStackView = {
         let element = UIStackView()
-        element.backgroundColor = UIConstants.SelectionColors.colorSelection5
+        element.backgroundColor = Asset.SelectionColors.colorSelection5
         element.layer.cornerRadius = 16
         element.spacing = 8
         element.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
@@ -65,7 +65,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         let element = UILabel()
         element.text = "Кошка заслонила камеру на созвоне"
         element.numberOfLines = 2
-        element.textColor = UIConstants.MainColors.secondaryTextColor
+        element.textColor = Asset.MainColors.secondaryTextColor
         element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -73,7 +73,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var actionStackView: UIStackView = {
         let element = UIStackView()
-        element.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        element.backgroundColor = Asset.MainColors.mainBackgroundColor
         element.axis = .horizontal
         element.alignment = .center
         element.distribution = .fill
@@ -84,7 +84,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     private lazy var trackedDaysCount: UILabel = {
         let element = UILabel()
         element.text = "5 дней"
-        element.textColor = UIConstants.MainColors.mainTextColor
+        element.textColor = Asset.MainColors.mainTextColor
         element.font = .systemFont(ofSize: 12, weight: .medium)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -92,9 +92,9 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private lazy var completeButton: UIButton = {
         let element = UIButton(type: .system)
-        element.backgroundColor = UIConstants.SelectionColors.colorSelection5
+        element.backgroundColor = Asset.SelectionColors.colorSelection5
         element.layer.cornerRadius = 17
-        element.tintColor = UIConstants.MainColors.secondaryTextColor
+        element.tintColor = Asset.MainColors.secondaryTextColor
         element.addAction(
             UIAction { [weak self] _ in
                 self?.completeButtonTapped()
@@ -133,8 +133,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         )
         
         let image = isCompletedToday ?
-        UIConstants.Icons.doneTrackerButton :
-        UIConstants.Icons.plusButton
+        Asset.Icons.doneTrackerButton :
+        Asset.Icons.plusButton
         let resizedImage = resizeImage(image, to: CGSize(width: 10, height: 10))
         completeButton.setImage(resizedImage, for: .normal)
         completeButton.layer.opacity = isCompletedToday ? 0.3 : 1
@@ -156,11 +156,11 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
     
     private func resizedButton() {
         if !trackerIsDone {
-            let resizedDoneImage = resizeImage(UIConstants.Icons.doneTrackerButton, to: CGSize(width: 10, height: 10))
+            let resizedDoneImage = resizeImage(Asset.Icons.doneTrackerButton, to: CGSize(width: 10, height: 10))
             completeButton.setImage(resizedDoneImage, for: .normal)
             completeButton.layer.opacity = 0.3
         } else {
-            let resizedPlusImage = resizeImage(UIConstants.Icons.plusButton, to: CGSize(width: 10, height: 10))
+            let resizedPlusImage = resizeImage(Asset.Icons.plusButton, to: CGSize(width: 10, height: 10))
             completeButton.setImage(resizedPlusImage, for: .normal)
             completeButton.layer.opacity = 1.0
         }

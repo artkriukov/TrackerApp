@@ -27,7 +27,7 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
-        guard let image = UIImage(named: UIConstants.Images.trackersEmptyImage) else {
+        guard let image = UIImage(named: Asset.Images.trackersEmptyImage) else {
             return UIStackView()
         }
         let stackView = FactoryUI.shared.makeEmptyStateView(
@@ -61,7 +61,7 @@ final class TrackersViewController: UIViewController {
             withReuseIdentifier: CollectionViewCellIdentifiers.headerSupplementaryView
         )
         element.showsVerticalScrollIndicator = false
-        element.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        element.backgroundColor = Asset.MainColors.mainBackgroundColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -72,7 +72,7 @@ final class TrackersViewController: UIViewController {
         element.layer.cornerRadius = 16
         element.isHidden = true
         element.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
-        element.backgroundColor = UIConstants.MainColors.blueColor
+        element.backgroundColor = Asset.MainColors.blueColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -193,7 +193,7 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
 
 private extension TrackersViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
         view.addSubview(emptyStateView)
         view.addSubview(trackersCollectionView)

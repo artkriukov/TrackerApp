@@ -45,7 +45,7 @@ final class NewEventViewController: UIViewController {
     private lazy var trackerTitleTextField: TextField = {
         let config = TextField.Configuration(
             placeholder: "Введите название трекера",
-            backgroundColor: UIConstants.MainColors.secondaryBackgroundColor
+            backgroundColor: Asset.MainColors.secondaryBackgroundColor
         )
         
         let element = TextField(configuration: config)
@@ -57,7 +57,7 @@ final class NewEventViewController: UIViewController {
     private lazy var errorLabel: UILabel = {
         let element = UILabel()
         element.text = "Ограничение \(maxCharLimit) символ"
-        element.textColor = UIConstants.MainColors.redColor
+        element.textColor = Asset.MainColors.redColor
         element.font = .systemFont(ofSize: 17)
         element.isHidden = true
         element.translatesAutoresizingMaskIntoConstraints = false
@@ -66,7 +66,7 @@ final class NewEventViewController: UIViewController {
     
     private lazy var topActionView: UIView = {
         let element = UIView()
-        element.backgroundColor = UIConstants.MainColors.secondaryBackgroundColor
+        element.backgroundColor = Asset.MainColors.secondaryBackgroundColor
         element.layer.cornerRadius = 16
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
@@ -83,7 +83,7 @@ final class NewEventViewController: UIViewController {
     private lazy var categoryButton: IconTextButton = {
         let config = IconTextButton.Configuration(
             textLabel: "Категория",
-            image: UIConstants.Icons.chevronRight,
+            image: Asset.Icons.chevronRight,
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
@@ -100,7 +100,7 @@ final class NewEventViewController: UIViewController {
         let config = IconTextButton.Configuration(
             textLabel: "Расписание",
             subtitle: nil,
-            image: UIConstants.Icons.chevronRight,
+            image: Asset.Icons.chevronRight,
             backgroundColor: .clear
         )
         let element = IconTextButton(configuration: config)
@@ -115,7 +115,7 @@ final class NewEventViewController: UIViewController {
     
     private lazy var separatorView: UIView = {
         let element = UIView()
-        element.backgroundColor = UIConstants.MainColors.separatorColor
+        element.backgroundColor = Asset.MainColors.separatorColor
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -133,8 +133,8 @@ final class NewEventViewController: UIViewController {
         let element = FactoryUI.shared.makeButton(
             title: "Отменить",
             backgroundColor: .clear,
-            textColor: UIConstants.MainColors.redColor,
-            borderColor: UIConstants.MainColors.redColor
+            textColor: Asset.MainColors.redColor,
+            borderColor: Asset.MainColors.redColor
         )
         element.addAction(
             UIAction { _ in
@@ -146,7 +146,7 @@ final class NewEventViewController: UIViewController {
     
     
     private lazy var createButton: UIButton = {
-        let button = FactoryUI.shared.makeButton(title: "Создать", backgroundColor: UIConstants.MainColors.buttonColor, textColor: UIConstants.MainColors.secondaryTextColor)
+        let button = FactoryUI.shared.makeButton(title: "Создать", backgroundColor: Asset.MainColors.buttonColor, textColor: Asset.MainColors.secondaryTextColor)
         button.addAction(UIAction { [weak self] _ in
             self?.createTracker()
         }, for: .touchUpInside)
@@ -242,7 +242,7 @@ final class NewEventViewController: UIViewController {
             subtitle: selectedDays.isEmpty ? nil : selectedDays.count == WeekDay.allCases.count ?
                 "Каждый день" :
                 selectedDays.map { $0.shortName }.joined(separator: ", "),
-            image: UIConstants.Icons.chevronRight,
+            image: Asset.Icons.chevronRight,
             backgroundColor: .clear
         )
         scheduleButton.update(configuration: newConfig)
@@ -251,7 +251,7 @@ final class NewEventViewController: UIViewController {
 
 private extension NewEventViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
         view.addSubview(trackerTitleTextField)
         view.addSubview(errorLabel)

@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum UIConstants {
+enum Asset {
     
     enum MainColors {
         static let mainBackgroundColor = UIColor { traitCollection in
@@ -22,9 +22,9 @@ enum UIConstants {
         static let secondaryBackgroundColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .light, .unspecified: UIColor(hexString: "#E6E8EB", alpha: 0.3)
-            case .dark: UIColor(hexString: "##414141", alpha: 0.85)
+            case .dark: UIColor(hexString: "#414141", alpha: 0.85)
             @unknown default:
-                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update secondaryBackgroundColor color handling.")
             }
         }
         
@@ -33,7 +33,7 @@ enum UIConstants {
             case .light, .unspecified: UIColor(hexString: "#1A1B22")
             case .dark: UIColor(hexString: "#FFFFFF")
             @unknown default:
-                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainTextColor color handling.")
             }
         }
         
@@ -42,7 +42,7 @@ enum UIConstants {
             case .light, .unspecified: UIColor(hexString: "#FFFFFF")
             case .dark: UIColor(hexString: "#1A1B22")
             @unknown default:
-                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update secondaryTextColor color handling.")
             }
         }
         
@@ -51,7 +51,7 @@ enum UIConstants {
             case .light, .unspecified: UIColor(hexString: "#1A1B22")
             case .dark: UIColor(hexString: "#FFFFFF")
             @unknown default:
-                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update mainBackground color handling.")
+                fatalError("Unhandled userInterfaceStyle case: \(traitCollection.userInterfaceStyle). Update buttonColor color handling.")
             }
         }
         

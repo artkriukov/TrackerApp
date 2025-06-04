@@ -23,8 +23,8 @@ final class TrackerTypeSelectionViewController: UIViewController {
     private lazy var habitButton: UIButton = {
         let element = FactoryUI.shared.makeButton(
             title: "Привычка",
-            backgroundColor: UIConstants.MainColors.buttonColor,
-            textColor: UIConstants.MainColors.secondaryTextColor
+            backgroundColor: Asset.MainColors.buttonColor,
+            textColor: Asset.MainColors.secondaryTextColor
         )
         
         element.addAction(
@@ -38,8 +38,8 @@ final class TrackerTypeSelectionViewController: UIViewController {
     private lazy var irregularEventButton: UIButton = {
         let element = FactoryUI.shared.makeButton(
             title: "Нерегулярное событие",
-            backgroundColor: UIConstants.MainColors.buttonColor,
-            textColor: UIConstants.MainColors.secondaryTextColor
+            backgroundColor: Asset.MainColors.buttonColor,
+            textColor: Asset.MainColors.secondaryTextColor
         )
         
         element.addAction(
@@ -91,7 +91,7 @@ final class TrackerTypeSelectionViewController: UIViewController {
 
 private extension TrackerTypeSelectionViewController {
     func setupViews() {
-        view.backgroundColor = UIConstants.MainColors.mainBackgroundColor
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
         view.addSubview(buttonsStackView)
         buttonsStackView.addArrangedSubview(habitButton)

@@ -65,7 +65,7 @@ final class FactoryUI {
     
     func makeTextLabel() -> UILabel{
         let label = UILabel()
-        label.textColor = UIConstants.MainColors.mainTextColor
+        label.textColor = Asset.MainColors.mainTextColor
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
