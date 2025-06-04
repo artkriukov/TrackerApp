@@ -14,7 +14,9 @@ enum TrackerOptionsMode {
 
 final class TrackerOptionsViewController: UIViewController {
     // MARK: - Private Properties
+    var selectedDays: [WeekDay] = []
     private let mode: TrackerOptionsMode
+    var onDaysSelected: (([WeekDay]) -> Void)?
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let element = UITableView()
@@ -36,7 +38,7 @@ final class TrackerOptionsViewController: UIViewController {
         )
         
         element.addAction(
-            UIAction {_ in 
+            UIAction {_ in
                 self.actionButtonTapped()
             }, for: .touchUpInside
         )
@@ -88,7 +90,10 @@ final class TrackerOptionsViewController: UIViewController {
     }
     
     private func actionButtonTapped() {
-        print("actionButtonTapped")
+        if mode == .schedule {
+            onDaysSelected?(selectedDays)
+        }
+        dismiss(animated: true)
     }
 }
 
@@ -106,11 +111,24 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
                 for: indexPath
             ) as? ScheduleTableViewCell else { return UITableViewCell() }
             
+            let day = WeekDay.allCases[indexPath.row]
+            let isSelected = selectedDays.contains(day)
+            
+            cell.configureCell(
+                with: day,
+                isSelected: isSelected,
+                onSwitchChanged: { [weak self] day, isSelected in
+                    if isSelected {
+                        self?.selectedDays.append(day)
+                    } else {
+                        self?.selectedDays.removeAll { $0 == day }
+                    }
+                }
+            )
+            
             let isLast = indexPath.row == WeekDay.allCases.count - 1
             let isOnly = WeekDay.allCases.count == 1
             cell.setSeparatorHidden(isLast || isOnly)
-            
-            cell.configureCell(with: WeekDay.allCases[indexPath.row])
             
             return cell
             

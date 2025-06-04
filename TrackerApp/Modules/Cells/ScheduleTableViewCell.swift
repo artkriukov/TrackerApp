@@ -9,6 +9,9 @@ import UIKit
 
 final class ScheduleTableViewCell: UITableViewCell {
 
+    private var day: WeekDay?
+    private var onSwitchChanged: ((WeekDay, Bool) -> Void)?
+    
     // MARK: - UI
     
     private lazy var stackView = FactoryUI.shared.makeTrackerOptionsStackView()
@@ -45,9 +48,19 @@ final class ScheduleTableViewCell: UITableViewCell {
         customTextLabel.text = nil
     }
     
-    func configureCell(with day: WeekDay) {
-        selectionStyle = .none
+    func configureCell(with day: WeekDay, isSelected: Bool = false, onSwitchChanged: @escaping (WeekDay, Bool) -> Void) {
+        self.day = day
+        self.onSwitchChanged = onSwitchChanged
         customTextLabel.text = day.rawValue
+        switcher.isOn = isSelected
+        
+        switcher.addAction(
+            UIAction { [weak self] _ in
+                guard let self = self, let day = self.day else { return }
+                self.onSwitchChanged?(day, self.switcher.isOn)
+            },
+            for: .valueChanged
+        )
     }
     
     func setSeparatorHidden(_ hidden: Bool) {

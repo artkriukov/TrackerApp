@@ -35,6 +35,7 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
+    
     private lazy var emojiContainerView: UIView = {
         let element = UIView()
         element.backgroundColor = UIColor(hexString: "#FFFFFF", alpha: 0.3)
@@ -86,8 +87,8 @@ final class TrackerCollectionViewCell: UICollectionViewCell {
         element.layer.cornerRadius = 17
         element.tintColor = UIConstants.MainColors.secondaryTextColor
         element.addAction(
-            UIAction { _ in
-                self.completeButtonTapped()
+            UIAction { [weak self] _ in
+                self?.completeButtonTapped()
             }, for: .touchUpInside)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element

@@ -19,10 +19,16 @@ protocol NewEventViewControllerDelegate: AnyObject {
 final class NewEventViewController: UIViewController {
     
     private let mode: NewEventMode
-    private let maxCharLimit = 1
+    private let maxCharLimit = 38
     
     private var topActionViewTopConstraint: NSLayoutConstraint?
     weak var delegate: NewEventViewControllerDelegate?
+    
+    private var selectedDays: [WeekDay] = [] {
+        didSet {
+            updateScheduleButton()
+        }
+    }
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
         let element = UIScrollView()
@@ -93,6 +99,7 @@ final class NewEventViewController: UIViewController {
     private lazy var scheduleButton: IconTextButton = {
         let config = IconTextButton.Configuration(
             textLabel: "Расписание",
+            subtitle: nil,
             image: UIConstants.Icons.chevronRight,
             backgroundColor: .clear
         )
@@ -187,8 +194,13 @@ final class NewEventViewController: UIViewController {
     }
     
     private func scheduleButtonTapped() {
-        let tackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
-        let navController = UINavigationController(rootViewController: tackerOptionsVC)
+        let trackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
+        trackerOptionsVC.selectedDays = selectedDays
+        trackerOptionsVC.onDaysSelected = { [weak self] days in
+            self?.selectedDays = days
+            self?.updateScheduleButton()
+        }
+        let navController = UINavigationController(rootViewController: trackerOptionsVC)
         present(navController, animated: true)
     }
     
@@ -222,6 +234,18 @@ final class NewEventViewController: UIViewController {
         let categoryTitle = "Категория по умолчанию" 
         delegate?.didCreateTracker(tracker, in: categoryTitle)
         
+    }
+    
+    private func updateScheduleButton() {
+        let newConfig = IconTextButton.Configuration(
+            textLabel: "Расписание",
+            subtitle: selectedDays.isEmpty ? nil : selectedDays.count == WeekDay.allCases.count ?
+                "Каждый день" :
+                selectedDays.map { $0.shortName }.joined(separator: ", "),
+            image: UIConstants.Icons.chevronRight,
+            backgroundColor: .clear
+        )
+        scheduleButton.update(configuration: newConfig)
     }
 }
 
