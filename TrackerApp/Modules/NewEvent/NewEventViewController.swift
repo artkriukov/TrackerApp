@@ -233,7 +233,8 @@ final class NewEventViewController: UIViewController {
         
         let categoryTitle = "Категория по умолчанию" 
         delegate?.didCreateTracker(tracker, in: categoryTitle)
-        
+        self.presentingViewController?.presentingViewController?
+            .dismiss(animated: true)
     }
     
     private func updateScheduleButton() {
