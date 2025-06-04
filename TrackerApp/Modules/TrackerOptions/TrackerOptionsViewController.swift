@@ -114,6 +114,7 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
             let day = WeekDay.allCases[indexPath.row]
             let isSelected = selectedDays.contains(day)
             
+            cell.selectionStyle = .none
             cell.configureCell(
                 with: day,
                 isSelected: isSelected,
