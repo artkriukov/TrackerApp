@@ -24,15 +24,48 @@ final class NewEventViewController: UIViewController {
     private var topActionViewTopConstraint: NSLayoutConstraint?
     weak var delegate: NewEventViewControllerDelegate?
     
+    private var selectedEmoji: String?
+    private var selectedColor: UIColor?
+    
     private var selectedDays: [WeekDay] = [] {
         didSet {
             updateScheduleButton()
         }
     }
+    
+    // MARK: - Data Source
+    private enum Emoji {
+        static let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
+    }
+
+    private enum Colors {
+        static let colors: [UIColor] = [
+            UIColor(hexString: "FD4C49"),
+            UIColor(hexString: "FF881E"),
+            UIColor(hexString: "007BFA"),
+            UIColor(hexString: "6E44FE"),
+            UIColor(hexString: "33CF69"),
+            UIColor(hexString: "E66DD4"),
+            UIColor(hexString: "F9D4D4"),
+            UIColor(hexString: "34A7FE"),
+            UIColor(hexString: "46E69D"),
+            UIColor(hexString: "35347C"),
+            UIColor(hexString: "FF674D"),
+            UIColor(hexString: "FF99CC"),
+            UIColor(hexString: "F6C48B"),
+            UIColor(hexString: "7994F5"),
+            UIColor(hexString: "832CF1"),
+            UIColor(hexString: "AD56DA"),
+            UIColor(hexString: "8D72E6"),
+            UIColor(hexString: "2FD058")
+        ]
+    }
+    
     // MARK: - UI
     private lazy var scrollView: UIScrollView = {
         let element = UIScrollView()
         element.translatesAutoresizingMaskIntoConstraints = false
+        element.keyboardDismissMode = .onDrag
         return element
     }()
     
@@ -153,6 +186,23 @@ final class NewEventViewController: UIViewController {
         return button
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: 52, height: 52)
+        layout.minimumInteritemSpacing = 5
+        layout.scrollDirection = .vertical
+        
+        let element = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        element.delegate = self
+        element.dataSource = self
+        element.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
+        element.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
+        element.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
+        element.allowsMultipleSelection = false
+        element.translatesAutoresizingMaskIntoConstraints = false
+        return element
+    }()
+    
     // MARK: - Init
     init(mode: NewEventMode) {
         self.mode = mode
@@ -221,20 +271,21 @@ final class NewEventViewController: UIViewController {
     }
     
     private func createTracker() {
-        guard let name = trackerTitleTextField.text, !name.isEmpty else { return }
+        guard let name = trackerTitleTextField.text, !name.isEmpty,
+              let emoji = selectedEmoji,
+              let color = selectedColor else { return }
         
         let tracker = Tracker(
             id: UUID(),
             name: name,
-            color: .blue,
-            emoji: "😊",
+            color: color,
+            emoji: emoji,
             schedule: mode == .newHabbit ? selectedDays : nil
         )
         
-        let categoryTitle = "Категория по умолчанию" 
+        let categoryTitle = "Категория по умолчанию"
         delegate?.didCreateTracker(tracker, in: categoryTitle)
-        self.presentingViewController?.presentingViewController?
-            .dismiss(animated: true)
+        self.presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
     private func updateScheduleButton() {
@@ -248,22 +299,37 @@ final class NewEventViewController: UIViewController {
         )
         scheduleButton.update(configuration: newConfig)
     }
+    
+    private func updateCreateButtonState() {
+        let isEnabled = !(trackerTitleTextField.text?.isEmpty ?? true) &&
+            selectedEmoji != nil &&
+            selectedColor != nil &&
+            (mode == .irregularEvent || !selectedDays.isEmpty)
+        
+        createButton.isEnabled = isEnabled
+        createButton.backgroundColor = isEnabled ? Asset.MainColors.buttonColor : Asset.MainColors.grayColor
+    }
 }
 
 private extension NewEventViewController {
     func setupViews() {
         view.backgroundColor = Asset.MainColors.mainBackgroundColor
         
-        view.addSubview(trackerTitleTextField)
-        view.addSubview(errorLabel)
-        view.addSubview(topActionView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(trackerTitleTextField)
+        contentView.addSubview(errorLabel)
+        contentView.addSubview(topActionView)
         topActionView.addSubview(topActionStackView)
         
         topActionStackView.addArrangedSubview(categoryButton)
         topActionStackView.addArrangedSubview(separatorView)
         topActionStackView.addArrangedSubview(scheduleButton)
         
-        view.addSubview(bottomActionStackView)
+        contentView.addSubview(collectionView)
+        contentView.addSubview(bottomActionStackView)
+        
         bottomActionStackView.addArrangedSubview(cancelButton)
         bottomActionStackView.addArrangedSubview(createButton)
         
@@ -272,40 +338,47 @@ private extension NewEventViewController {
     }
     
     func setupConstraints() {
+       
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            trackerTitleTextField.topAnchor
-                .constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            trackerTitleTextField.leadingAnchor
-                .constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            trackerTitleTextField.trailingAnchor
-                .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            trackerTitleTextField.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 24),
+            trackerTitleTextField.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            trackerTitleTextField.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            trackerTitleTextField.heightAnchor.constraint(equalToConstant: 75),
             
             errorLabel.topAnchor.constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 8),
-            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             
-//            topActionView.topAnchor
-//                .constraint(equalTo: trackerTitleTextField.bottomAnchor, constant: 24),
-            topActionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            topActionView.trailingAnchor
-                .constraint(equalTo: view.trailingAnchor, constant: -20),
+            topActionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            topActionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             
-            topActionStackView.topAnchor
-                .constraint(equalTo: topActionView.topAnchor, constant: 26),
-            topActionStackView.leadingAnchor
-                .constraint(equalTo: topActionView.leadingAnchor, constant: 16),
-            topActionStackView.trailingAnchor
-                .constraint(equalTo: topActionView.trailingAnchor, constant: -16),
-            topActionStackView.bottomAnchor
-                .constraint(equalTo: topActionView.bottomAnchor, constant: -26),
+            topActionStackView.topAnchor.constraint(equalTo: topActionView.topAnchor, constant: 26),
+            topActionStackView.leadingAnchor.constraint(equalTo: topActionView.leadingAnchor, constant: 16),
+            topActionStackView.trailingAnchor.constraint(equalTo: topActionView.trailingAnchor, constant: -16),
+            topActionStackView.bottomAnchor.constraint(equalTo: topActionView.bottomAnchor, constant: -26),
             
             separatorView.heightAnchor.constraint(equalToConstant: 1),
             
-            bottomActionStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            bottomActionStackView.trailingAnchor
-                .constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            bottomActionStackView.bottomAnchor
-                .constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: topActionView.bottomAnchor, constant: 32),
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            collectionView.heightAnchor.constraint(equalToConstant: 500),
+            
+            bottomActionStackView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 16),
+            bottomActionStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            bottomActionStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            bottomActionStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            bottomActionStackView.heightAnchor.constraint(equalToConstant: 60),
             
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             createButton.heightAnchor.constraint(equalToConstant: 60),
@@ -323,3 +396,66 @@ extension NewEventViewController: UITextFieldDelegate {
         return true
     }
 }
+
+extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        2
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        section == 0 ? Emoji.emojis.count : Colors.colors.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if indexPath.section == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as! EmojiCell
+            cell.configure(with: Emoji.emojis[indexPath.row])
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as! ColorCell
+            cell.configure(with: Colors.colors[indexPath.row])
+            return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: HeaderView.identifier,
+            for: indexPath
+        ) as! HeaderView
+        header.configure(title: indexPath.section == 0 ? "Emoji" : "Цвет")
+        return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        CGSize(width: collectionView.bounds.width, height: 50)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        5
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            selectedEmoji = Emoji.emojis[indexPath.row]
+        } else {
+            selectedColor = Colors.colors[indexPath.row]
+        }
+        updateCreateButtonState()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        false
+    }
+}
+
+
