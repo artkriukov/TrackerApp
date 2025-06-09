@@ -37,7 +37,7 @@ final class NewEventViewController: UIViewController {
     private enum Emoji {
         static let emojis = ["🙂", "😻", "🌺", "🐶", "❤️", "😱", "😇", "😡", "🥶", "🤔", "🙌", "🍔", "🥦", "🏓", "🥇", "🎸", "🏝", "😪"]
     }
-
+    
     private enum Colors {
         static let colors: [UIColor] = [
             UIColor(hexString: "FD4C49"),
@@ -183,6 +183,7 @@ final class NewEventViewController: UIViewController {
         button.addAction(UIAction { [weak self] _ in
             self?.createTracker()
         }, for: .touchUpInside)
+        button.backgroundColor = Asset.MainColors.grayColor
         return button
     }()
     
@@ -210,7 +211,7 @@ final class NewEventViewController: UIViewController {
         
         checkMode()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -292,7 +293,7 @@ final class NewEventViewController: UIViewController {
         let newConfig = IconTextButton.Configuration(
             textLabel: "Расписание",
             subtitle: selectedDays.isEmpty ? nil : selectedDays.count == WeekDay.allCases.count ?
-                "Каждый день" :
+            "Каждый день" :
                 selectedDays.map { $0.shortName }.joined(separator: ", "),
             image: Asset.Icons.chevronRight,
             backgroundColor: .clear
@@ -301,10 +302,12 @@ final class NewEventViewController: UIViewController {
     }
     
     private func updateCreateButtonState() {
-        let isEnabled = !(trackerTitleTextField.text?.isEmpty ?? true) &&
-            selectedEmoji != nil &&
-            selectedColor != nil &&
-            (mode == .irregularEvent || !selectedDays.isEmpty)
+        let isTitleValid = !(trackerTitleTextField.text?.isEmpty ?? true) && errorLabel.isHidden
+        let isEmojiSelected = selectedEmoji != nil
+        let isColorSelected = selectedColor != nil
+        let isScheduleValid = mode == .irregularEvent || !selectedDays.isEmpty
+        
+        let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid
         
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? Asset.MainColors.buttonColor : Asset.MainColors.grayColor
