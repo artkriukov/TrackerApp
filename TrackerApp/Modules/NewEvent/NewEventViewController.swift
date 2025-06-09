@@ -198,7 +198,7 @@ final class NewEventViewController: UIViewController {
         element.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.identifier)
         element.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.identifier)
         element.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
-        element.allowsMultipleSelection = false
+        element.allowsMultipleSelection = true
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -442,8 +442,16 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 0 {
+            collectionView.indexPathsForSelectedItems?
+                .filter { $0.section == 0 && $0 != indexPath }
+                .forEach { collectionView.deselectItem(at: $0, animated: false) }
+            
             selectedEmoji = Emoji.emojis[indexPath.row]
         } else {
+            collectionView.indexPathsForSelectedItems?
+                .filter { $0.section == 1 && $0 != indexPath }
+                .forEach { collectionView.deselectItem(at: $0, animated: false) }
+            
             selectedColor = Colors.colors[indexPath.row]
         }
         updateCreateButtonState()
