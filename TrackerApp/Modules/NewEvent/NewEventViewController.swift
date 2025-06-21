@@ -294,8 +294,9 @@ final class NewEventViewController: UIViewController {
         )
         
         TrackerStore.shared.addTracker(tracker, categoryTitle: category, createdAt: Date())
-        delegate?.didCreateTracker(tracker, in: category)
-        dismiss(animated: true)
+//        delegate?.didCreateTracker(tracker, in: category)
+        presentingViewController?.presentingViewController?
+                    .dismiss(animated: true)
     }
     
     private func updateScheduleButton() {

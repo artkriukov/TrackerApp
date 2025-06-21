@@ -151,9 +151,6 @@ final class TrackersViewController: UIViewController {
         emptyStateView.isHidden = hasTrackers
         //        filterButton.isHidden = !hasTrackers
         trackersCollectionView.isHidden = !hasTrackers
-        
-//        print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
-//        print("Number of categories: \(categories.count)")
     }
     
     private func toggleTrackerCompletion(_ tracker: Tracker) {
