@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 enum NewEventMode {
     case newHabbit
@@ -274,19 +275,27 @@ final class NewEventViewController: UIViewController {
     private func createTracker() {
         guard let name = trackerTitleTextField.text, !name.isEmpty,
               let emoji = selectedEmoji,
-              let color = selectedColor else { return }
+              let color = selectedColor else {
+            return
+        }
+        
+        let categories = TrackerCategoryStore.shared.fetchAllCategories()
+        let category = categories.first?.name ?? "Без категории"
         
         let tracker = Tracker(
             id: UUID(),
             name: name,
             color: color,
             emoji: emoji,
-            schedule: mode == .newHabbit ? selectedDays : nil
+            schedule: mode == .newHabbit ? Set(selectedDays) : [],
+            categoryName: category,
+            createdAt: Date(),
+            isPinned: false
         )
         
-        let categoryTitle = "Категория по умолчанию"
-        delegate?.didCreateTracker(tracker, in: categoryTitle)
-        self.presentingViewController?.presentingViewController?.dismiss(animated: true)
+        TrackerStore.shared.addTracker(tracker, categoryTitle: category, createdAt: Date())
+        delegate?.didCreateTracker(tracker, in: category)
+        dismiss(animated: true)
     }
     
     private func updateScheduleButton() {

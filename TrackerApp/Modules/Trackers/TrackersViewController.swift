@@ -101,9 +101,27 @@ final class TrackersViewController: UIViewController {
         setupConstraints()
         setupNavigation()
         updateEmptyStateVisibility()
+
+        updateCompletedTrackers()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadData()
+    }
+
     // MARK: - Private Methods
+    private func updateCompletedTrackers() {
+        completedTrackers = TrackerRecordStore.shared.fetchAllRecords()
+        trackersCollectionView.reloadData()
+    }
+    
+    private func reloadData() {
+        categories = TrackerStore.shared.fetchAllCategories()
+        completedTrackers = TrackerRecordStore.shared.fetchAllRecords()
+        trackersCollectionView.reloadData()
+        updateEmptyStateVisibility()
+    }
     
     private func filterTrackers(for date: Date) {
         let calendar = Calendar.current
@@ -114,10 +132,7 @@ final class TrackersViewController: UIViewController {
         
         filteredCategories = categories.compactMap { category in
             let filteredTrackers = category.trackers.filter { tracker in
-                
-                guard let schedule = tracker.schedule else { return true }
-             
-                return schedule.contains(currentWeekDay)
+                tracker.schedule.contains(currentWeekDay)
             }
             
             return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
@@ -137,8 +152,8 @@ final class TrackersViewController: UIViewController {
         //        filterButton.isHidden = !hasTrackers
         trackersCollectionView.isHidden = !hasTrackers
         
-        print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
-        print("Number of categories: \(categories.count)")
+//        print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
+//        print("Number of categories: \(categories.count)")
     }
     
     private func toggleTrackerCompletion(_ tracker: Tracker) {
