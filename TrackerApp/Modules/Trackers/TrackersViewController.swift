@@ -121,14 +121,9 @@ final class TrackersViewController: UIViewController {
         reloadData()
     }
 
+
+    
     // MARK: - Private Methods
-    
-    private func reloadData() {
-        categories = TrackerStore.shared.fetchAllCategories()
-        trackersCollectionView.reloadData()
-        updateEmptyStateVisibility()
-    }
-    
     private func filterTrackers(for date: Date) {
         
         let calendar = Calendar.current
@@ -155,6 +150,21 @@ final class TrackersViewController: UIViewController {
     
     private func dateChanged() {
         currentDate = datePicker.date
+    }
+    
+    private func refreshData() {
+        DispatchQueue.global().async {
+            let loadedCategories = TrackerStore.shared.fetchAllCategories()
+            DispatchQueue.main.async {
+                self.categories = loadedCategories
+                self.filterTrackers(for: self.currentDate)
+                self.updateEmptyStateVisibility()
+            }
+        }
+    }
+    
+    private func reloadData() {
+        refreshData()
     }
     
     private func updateEmptyStateVisibility() {
@@ -321,16 +331,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: NewEventViewControllerDelegate {
     func didCreateTracker(_ tracker: Tracker, in categoryTitle: String) {
-        
-        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            categories[index].trackers.append(tracker)
-        } else {
-            let category = TrackerCategory(title: categoryTitle, trackers: [tracker])
-            categories.append(category)
-        }
-        
-        filterTrackers(for: currentDate)
-        trackersCollectionView.reloadData()
-        updateEmptyStateVisibility()
+        refreshData()
     }
 }

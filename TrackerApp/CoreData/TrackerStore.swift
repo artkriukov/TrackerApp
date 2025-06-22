@@ -116,30 +116,31 @@ final class TrackerStore {
     // MARK: - Fetch Categories
     
     func fetchAllCategories() -> [TrackerCategory] {
+        var result: [TrackerCategory] = []
         
-        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        let categoryEntities = (try? context.fetch(request)) ?? []
-        
-        
-        let result = categoryEntities.map { categoryEntity in
+        context.performAndWait {
+            let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
             
-            let trackersSet = categoryEntity.trackers as? NSSet ?? NSSet()
-            
-            let trackers = trackersSet.allObjects.compactMap { object -> Tracker? in
-                guard let trackerCoreData = object as? TrackerCoreData else {
-                    return nil
+            do {
+                let categoryEntities = try context.fetch(request)
+                
+                result = categoryEntities.compactMap { categoryEntity in
+                    guard let trackersSet = categoryEntity.trackers as? NSSet else { return nil }
+                    
+                    let trackers = trackersSet.compactMap { object -> Tracker? in
+                        guard let trackerCoreData = object as? TrackerCoreData else { return nil }
+                        return trackerCoreData.toTracker()
+                    }
+                    
+                    return TrackerCategory(
+                        title: categoryEntity.name ?? "Без имени",
+                        trackers: trackers
+                    )
                 }
-                let tracker = trackerCoreData.toTracker()
-                if tracker == nil {
-                }
-                return tracker
+            } catch {
+                print("Ошибка при загрузке категорий: \(error)")
+                result = []
             }
-            
-            
-            return TrackerCategory(
-                title: categoryEntity.name ?? "Без имени",
-                trackers: trackers
-            )
         }
         
         return result
