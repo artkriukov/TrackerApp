@@ -423,11 +423,23 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as! EmojiCell
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmojiCell.identifier,
+                for: indexPath
+            ) as? EmojiCell else {
+                assertionFailure("Failed to dequeue EmojiCell")
+                return UICollectionViewCell()
+            }
             cell.configure(with: Emoji.emojis[indexPath.row])
             return cell
         } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as! ColorCell
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: ColorCell.identifier,
+                for: indexPath
+            ) as? ColorCell else {
+                assertionFailure("Failed to dequeue ColorCell")
+                return UICollectionViewCell() 
+            }
             cell.configure(with: Colors.colors[indexPath.row])
             return cell
         }
