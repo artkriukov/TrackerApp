@@ -9,31 +9,33 @@ import UIKit
 
 extension TrackerCoreData {
     func toTracker() -> Tracker? {
+        
         guard let id = self.id else {
-            print("TrackerEntity: id отсутствует")
+            print("🔴 Ошибка: id отсутствует")
             return nil
         }
-        guard let name = self.name else { 
-            print("TrackerEntity: name отсутствует")
+        guard let name = self.name else {
+            print("🔴 Ошибка: name отсутствует")
             return nil
         }
         guard let emoji = self.emoji else {
-            print("TrackerEntity: emoji отсутствует")
+            print("🔴 Ошибка: emoji отсутствует")
             return nil
         }
         guard let colorHex = self.color else {
-            print("TrackerEntity: colorHex отсутствует")
+            print("🔴 Ошибка: color отсутствует")
             return nil
         }
         guard let categoryName = self.category?.name else {
-            print("TrackerEntity: категория отсутствует")
+            print("🔴 Ошибка: категория отсутствует")
             return nil
         }
         guard let createdAt = self.createdAt else {
-            print("TrackerEntity: createdAt отсутствует")
+            print("🔴 Ошибка: createdAt отсутствует")
             return nil
         }
 
+        
         var scheduleSet = Set<WeekDay>()
         if let data = self.schedule {
             if let rawValues = try? NSKeyedUnarchiver.unarchivedObject(
@@ -41,10 +43,13 @@ extension TrackerCoreData {
                 from: data
             ) as? [String] {
                 scheduleSet = Set(rawValues.compactMap { WeekDay(rawValue: $0) })
+            } else {
             }
+        } else {
+            print("🔴 Расписание отсутствует")
         }
 
-        return Tracker(
+        let tracker = Tracker(
             id: id,
             name: name,
             color: UIColor(hex: colorHex),
@@ -54,5 +59,7 @@ extension TrackerCoreData {
             createdAt: createdAt,
             isPinned: self.isPinned
         )
+        
+        return tracker
     }
 }

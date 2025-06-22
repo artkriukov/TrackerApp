@@ -24,7 +24,7 @@ final class TrackerRecordStore {
         if let trackerEntity = TrackerStore.shared.fetchTrackerEntity(by: id) {
             entity.tracker = trackerEntity
         } else {
-            print("Не удалось найти TrackerEntity для установки связи")
+            print("Не удалось найти TrackerEntity")
         }
 
         CoreDataManager.shared.saveContext()

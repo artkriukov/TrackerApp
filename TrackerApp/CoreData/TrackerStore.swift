@@ -116,27 +116,33 @@ final class TrackerStore {
     // MARK: - Fetch Categories
     
     func fetchAllCategories() -> [TrackerCategory] {
-        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
-        do {
-            let categoryEntities = try context.fetch(request)
-            return categoryEntities.compactMap { categoryEntity -> TrackerCategory? in
-                guard let name = categoryEntity.name else { return nil }
-                
-                let trackers: [Tracker] = {
-                    guard let trackersSet = categoryEntity.trackers as? Set<TrackerCoreData> else {
-                        return []
-                    }
-                    return trackersSet.compactMap { $0.toTracker() }
-                }()
-                
-                return TrackerCategory(title: name, trackers: trackers)
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        let categoryEntities = (try? context.fetch(request)) ?? []
+        
+        
+        let result = categoryEntities.map { categoryEntity in
+            
+            let trackersSet = categoryEntity.trackers as? NSSet ?? NSSet()
+            
+            let trackers = trackersSet.allObjects.compactMap { object -> Tracker? in
+                guard let trackerCoreData = object as? TrackerCoreData else {
+                    return nil
+                }
+                let tracker = trackerCoreData.toTracker()
+                if tracker == nil {
+                }
+                return tracker
             }
-        } catch {
-            print("Ошибка при загрузке категорий: \(error)")
-            return []
+            
+            
+            return TrackerCategory(
+                title: categoryEntity.name ?? "Без имени",
+                trackers: trackers
+            )
         }
+        
+        return result
     }
     
     // MARK: - Helpers

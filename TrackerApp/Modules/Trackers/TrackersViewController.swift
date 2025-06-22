@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class TrackersViewController: UIViewController {
     
@@ -102,38 +103,48 @@ final class TrackersViewController: UIViewController {
         setupNavigation()
         updateEmptyStateVisibility()
 
-        updateCompletedTrackers()
+        reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let loadedCategories = TrackerStore.shared.fetchAllCategories()
+            
+            DispatchQueue.main.async {
+                self.categories = loadedCategories
+                self.filterTrackers(for: self.currentDate)
+            }
+        }
+        
         reloadData()
     }
 
     // MARK: - Private Methods
-    private func updateCompletedTrackers() {
-        completedTrackers = TrackerRecordStore.shared.fetchAllRecords()
-        trackersCollectionView.reloadData()
-    }
     
     private func reloadData() {
         categories = TrackerStore.shared.fetchAllCategories()
-        completedTrackers = TrackerRecordStore.shared.fetchAllRecords()
         trackersCollectionView.reloadData()
         updateEmptyStateVisibility()
     }
     
     private func filterTrackers(for date: Date) {
+        
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: date)
-        
         let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
         let currentWeekDay = WeekDay.allCases[adjustedWeekday - 1]
         
+        
         filteredCategories = categories.compactMap { category in
+            
             let filteredTrackers = category.trackers.filter { tracker in
-                tracker.schedule.contains(currentWeekDay)
+                let contains = tracker.schedule.contains(currentWeekDay)
+
+                return contains
             }
+            
             
             return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
         }
@@ -310,6 +321,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: NewEventViewControllerDelegate {
     func didCreateTracker(_ tracker: Tracker, in categoryTitle: String) {
+        
         if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
             categories[index].trackers.append(tracker)
         } else {
