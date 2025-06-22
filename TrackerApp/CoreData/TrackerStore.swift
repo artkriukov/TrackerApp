@@ -56,7 +56,6 @@ final class TrackerStore {
         }
         
         CoreDataManager.shared.saveContext()
-        print("Трекер успешно добавлен в категорию \(categoryTitle)")
     }
     
     // MARK: - Update Tracker
@@ -64,7 +63,6 @@ final class TrackerStore {
     func updateTracker(_ tracker: Tracker, categoryTitle: String) {
         guard let entity = fetchTrackerEntity(by: tracker.id),
               let category = fetchCategoryEntity(by: categoryTitle) else {
-            print("Не удалось найти трекер или категорию для обновления")
             return
         }
         
@@ -96,13 +94,12 @@ final class TrackerStore {
     
     func deleteTracker(_ tracker: Tracker) {
         if let entity = fetchTrackerEntity(by: tracker.id) {
-            print("Удаляем трекер: \(entity.name ?? "")")
-            print("У него записей: \(entity.records?.count ?? 0)")
             context.delete(entity)
             CoreDataManager.shared.saveContext()
             
-            let remainingRecords = TrackerRecordStore.shared.fetchAllRecords().filter { $0.trackerId == tracker.id }
-            print("Осталось записей с таким id: \(remainingRecords.count)")
+            _ = TrackerRecordStore.shared
+                .fetchAllRecords()
+                .filter { $0.trackerId == tracker.id }
         }
     }
     
@@ -125,7 +122,9 @@ final class TrackerStore {
                 let categoryEntities = try context.fetch(request)
                 
                 result = categoryEntities.compactMap { categoryEntity in
-                    guard let trackersSet = categoryEntity.trackers as? NSSet else { return nil }
+                    guard let trackersSet = categoryEntity.trackers else {
+                        return nil
+                    }
                     
                     let trackers = trackersSet.compactMap { object -> Tracker? in
                         guard let trackerCoreData = object as? TrackerCoreData else { return nil }
@@ -138,7 +137,6 @@ final class TrackerStore {
                     )
                 }
             } catch {
-                print("Ошибка при загрузке категорий: \(error)")
                 result = []
             }
         }
@@ -152,7 +150,6 @@ final class TrackerStore {
         do {
             return try NSKeyedArchiver.archivedData(withRootObject: rawValues, requiringSecureCoding: true)
         } catch {
-            print("Ошибка при сохранении расписания: \(error)")
             return nil
         }
     }

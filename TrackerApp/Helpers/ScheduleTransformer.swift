@@ -26,7 +26,6 @@ final class ScheduleTransformer: ValueTransformer {
                 requiringSecureCoding: true
             )
         } catch {
-            print("Failed to archive schedule: \(error)")
             return nil
         }
     }
@@ -42,7 +41,6 @@ final class ScheduleTransformer: ValueTransformer {
             
             return Set(rawValues?.compactMap { WeekDay(rawValue: $0) } ?? [])
         } catch {
-            print("Failed to unarchive schedule: \(error)")
             return nil
         }
     }

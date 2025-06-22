@@ -434,12 +434,21 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            return UICollectionReusableView()
+        }
+        
+        guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: HeaderView.identifier,
             for: indexPath
-        ) as! HeaderView
-        header.configure(title: indexPath.section == 0 ? "Emoji" : "Цвет")
+        ) as? HeaderView else {
+            assertionFailure("Не удалось создать HeaderView")
+            return UICollectionReusableView()
+        }
+        
+        let title = indexPath.section == 0 ? "Emoji" : "Цвет"
+        header.configure(title: title)
         return header
     }
     

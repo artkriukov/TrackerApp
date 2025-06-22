@@ -49,10 +49,13 @@ extension TrackerCoreData {
             print("🔴 Расписание отсутствует")
         }
 
+        guard let color = UIColor(hex: colorHex) else { return nil }
+
+        
         let tracker = Tracker(
             id: id,
             name: name,
-            color: UIColor(hex: colorHex),
+            color: color,
             emoji: emoji,
             schedule: scheduleSet,
             categoryName: categoryName,

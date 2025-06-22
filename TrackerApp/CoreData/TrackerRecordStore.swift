@@ -21,11 +21,12 @@ final class TrackerRecordStore {
         entity.trackerId = id
         entity.date = date
         
-        if let trackerEntity = TrackerStore.shared.fetchTrackerEntity(by: id) {
-            entity.tracker = trackerEntity
-        } else {
+        guard let trackerEntity = TrackerStore.shared.fetchTrackerEntity(by: id) else {
             print("Не удалось найти TrackerEntity")
+            return
         }
+
+        entity.tracker = trackerEntity
 
         CoreDataManager.shared.saveContext()
     }
@@ -54,7 +55,6 @@ final class TrackerRecordStore {
         }
     }
 
-
     func deleteRecord(_ record: TrackerRecord) {
         removeRecord(for: record.trackerId, on: record.date)
     }
@@ -67,13 +67,11 @@ final class TrackerRecordStore {
             let result = try context.fetch(request)
             return result.compactMap { entity in
                 guard let id = entity.trackerId, let date = entity.date else {
-                    print("Обнаружена запись с nil trackerId или date")
                     return nil
                 }
                 return TrackerRecord(trackerId: id, date: date)
             }
         } catch {
-            print("Ошибка при получении записей TrackerRecord: \(error)")
             return []
         }
     }
@@ -90,7 +88,6 @@ final class TrackerRecordStore {
             let result = try context.fetch(request)
             return !result.isEmpty
         } catch {
-            print("Ошибка при проверке завершённости трекера \(trackerID): \(error)")
             return false
         }
     }

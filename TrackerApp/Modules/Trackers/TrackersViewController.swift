@@ -103,7 +103,7 @@ final class TrackersViewController: UIViewController {
         setupNavigation()
         updateEmptyStateVisibility()
 
-        reloadData()
+        refreshData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -118,7 +118,7 @@ final class TrackersViewController: UIViewController {
             }
         }
         
-        reloadData()
+        refreshData()
     }
 
 
@@ -163,14 +163,10 @@ final class TrackersViewController: UIViewController {
         }
     }
     
-    private func reloadData() {
-        refreshData()
-    }
-    
     private func updateEmptyStateVisibility() {
         let hasTrackers = !filteredCategories.isEmpty
         emptyStateView.isHidden = hasTrackers
-        //        filterButton.isHidden = !hasTrackers
+        filterButton.isHidden = !hasTrackers
         trackersCollectionView.isHidden = !hasTrackers
     }
     

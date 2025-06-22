@@ -37,33 +37,45 @@ extension UIColor {
 }
 
 extension UIColor {
-    func toData() -> Data {
-        try! NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
+    func toData() -> Data? {
+        return try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
     }
     
-    static func color(from data: Data) -> UIColor {
-        try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as! UIColor
+    @available(iOS 12.0, *)
+    static func color(from data: Data) -> UIColor? {
+        return try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data)
     }
     
-    func toHexString() -> String {
+    func toHexString() -> String? {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
-        getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil
+        }
+        
         return String(format: "#%02X%02X%02X",
                       Int(red * 255),
                       Int(green * 255),
                       Int(blue * 255))
     }
     
-    convenience init(hex: String) {
-        let scanner = Scanner(string: hex)
-        _ = scanner.scanString("#")
+    convenience init?(hex: String) {
+        let hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "#", with: "")
+        
+        guard hexString.count == 6 else {
+            return nil
+        }
+        
         var rgb: UInt64 = 0
-        scanner.scanHexInt64(&rgb)
+        guard Scanner(string: hexString).scanHexInt64(&rgb) else {
+            return nil
+        }
+        
         let r = CGFloat((rgb >> 16) & 0xFF) / 255
         let g = CGFloat((rgb >> 8) & 0xFF) / 255
         let b = CGFloat(rgb & 0xFF) / 255
+        
         self.init(red: r, green: g, blue: b, alpha: 1)
     }
 }
-
-

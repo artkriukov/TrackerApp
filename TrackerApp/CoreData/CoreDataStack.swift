@@ -25,7 +25,7 @@ final class CoreDataManager {
         let container = NSPersistentContainer(name: "TrackerModel")
         container.loadPersistentStores { _, error in
             if let error = error {
-                fatalError("Ошибка при загрузке хранилища Core Data: \(error)")
+                assertionFailure("Ошибка при загрузке хранилища Core Data: \(error)")
             }
         }
         return container
@@ -45,10 +45,8 @@ final class CoreDataManager {
     func saveContext() {
         guard context.hasChanges else { return }
         do {
-            print("Успешно сохранено")
             try context.save()
         } catch {
-            print("Ошибка при сохранении контекста: \(error)")
             context.rollback()
         }
     }
