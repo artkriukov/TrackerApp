@@ -222,6 +222,7 @@ final class NewEventViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        setupHideKeyboardOnTap()
     }
     
     private func checkMode() {
@@ -438,7 +439,7 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
                 for: indexPath
             ) as? ColorCell else {
                 assertionFailure("Failed to dequeue ColorCell")
-                return UICollectionViewCell() 
+                return UICollectionViewCell()
             }
             cell.configure(with: Colors.colors[indexPath.row])
             return cell
@@ -502,4 +503,14 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     }
 }
 
-
+extension NewEventViewController {
+    private func setupHideKeyboardOnTap() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
+    }
+}

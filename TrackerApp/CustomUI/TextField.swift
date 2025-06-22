@@ -34,6 +34,8 @@ final class TextField: UITextField {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: self.frame.height))
         leftView = paddingView
         leftViewMode = .always
+
+        delegate = self
     }
     
     private func setupConstraints() {
@@ -49,5 +51,13 @@ extension TextField {
     struct Configuration {
         let placeholder: String
         let backgroundColor: UIColor?
+    }
+}
+
+extension TextField: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        endEditing(true)
+        return true
     }
 }
