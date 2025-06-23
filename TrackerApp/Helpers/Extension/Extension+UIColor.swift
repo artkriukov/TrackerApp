@@ -35,3 +35,47 @@ extension UIColor {
         self.init(red: r, green: g, blue: b, alpha: a)
     }
 }
+
+extension UIColor {
+    func toData() -> Data? {
+        return try? NSKeyedArchiver.archivedData(withRootObject: self, requiringSecureCoding: false)
+    }
+    
+    @available(iOS 12.0, *)
+    static func color(from data: Data) -> UIColor? {
+        return try? NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data)
+    }
+    
+    func toHexString() -> String? {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        
+        guard getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil
+        }
+        
+        return String(format: "#%02X%02X%02X",
+                      Int(red * 255),
+                      Int(green * 255),
+                      Int(blue * 255))
+    }
+    
+    convenience init?(hex: String) {
+        let hexString = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "#", with: "")
+        
+        guard hexString.count == 6 else {
+            return nil
+        }
+        
+        var rgb: UInt64 = 0
+        guard Scanner(string: hexString).scanHexInt64(&rgb) else {
+            return nil
+        }
+        
+        let r = CGFloat((rgb >> 16) & 0xFF) / 255
+        let g = CGFloat((rgb >> 8) & 0xFF) / 255
+        let b = CGFloat(rgb & 0xFF) / 255
+        
+        self.init(red: r, green: g, blue: b, alpha: 1)
+    }
+}

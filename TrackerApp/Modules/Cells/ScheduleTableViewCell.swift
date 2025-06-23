@@ -51,7 +51,7 @@ final class ScheduleTableViewCell: UITableViewCell {
     func configureCell(with day: WeekDay, isSelected: Bool = false, onSwitchChanged: @escaping (WeekDay, Bool) -> Void) {
         self.day = day
         self.onSwitchChanged = onSwitchChanged
-        customTextLabel.text = day.rawValue
+        customTextLabel.text = day.fullName
         switcher.isOn = isSelected
         
         switcher.addAction(
@@ -77,7 +77,6 @@ private extension ScheduleTableViewCell {
         stackView.addArrangedSubview(switcher)
         contentView.addSubview(separator)
         
-        customTextLabel.text = "hello"
     }
     
     func setupConstraints() {

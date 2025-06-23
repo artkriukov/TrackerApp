@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class TrackersViewController: UIViewController {
     
@@ -101,24 +102,44 @@ final class TrackersViewController: UIViewController {
         setupConstraints()
         setupNavigation()
         updateEmptyStateVisibility()
+
+        refreshData()
     }
     
-    // MARK: - Private Methods
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let loadedCategories = TrackerStore.shared.fetchAllCategories()
+            
+            DispatchQueue.main.async {
+                self.categories = loadedCategories
+                self.filterTrackers(for: self.currentDate)
+            }
+        }
+        
+        refreshData()
+    }
+
+
     
+    // MARK: - Private Methods
     private func filterTrackers(for date: Date) {
+        
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: date)
-        
         let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
         let currentWeekDay = WeekDay.allCases[adjustedWeekday - 1]
         
+        
         filteredCategories = categories.compactMap { category in
+            
             let filteredTrackers = category.trackers.filter { tracker in
-                
-                guard let schedule = tracker.schedule else { return true }
-             
-                return schedule.contains(currentWeekDay)
+                let contains = tracker.schedule.contains(currentWeekDay)
+
+                return contains
             }
+            
             
             return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
         }
@@ -131,14 +152,22 @@ final class TrackersViewController: UIViewController {
         currentDate = datePicker.date
     }
     
+    private func refreshData() {
+        DispatchQueue.global().async {
+            let loadedCategories = TrackerStore.shared.fetchAllCategories()
+            DispatchQueue.main.async {
+                self.categories = loadedCategories
+                self.filterTrackers(for: self.currentDate)
+                self.updateEmptyStateVisibility()
+            }
+        }
+    }
+    
     private func updateEmptyStateVisibility() {
         let hasTrackers = !filteredCategories.isEmpty
         emptyStateView.isHidden = hasTrackers
-        //        filterButton.isHidden = !hasTrackers
+        filterButton.isHidden = !hasTrackers
         trackersCollectionView.isHidden = !hasTrackers
-        
-        print("Empty state visibility: \(emptyStateView.isHidden ? "hidden" : "visible")")
-        print("Number of categories: \(categories.count)")
     }
     
     private func toggleTrackerCompletion(_ tracker: Tracker) {
@@ -298,15 +327,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: NewEventViewControllerDelegate {
     func didCreateTracker(_ tracker: Tracker, in categoryTitle: String) {
-        if let index = categories.firstIndex(where: { $0.title == categoryTitle }) {
-            categories[index].trackers.append(tracker)
-        } else {
-            let category = TrackerCategory(title: categoryTitle, trackers: [tracker])
-            categories.append(category)
-        }
-        
-        filterTrackers(for: currentDate)
-        trackersCollectionView.reloadData()
-        updateEmptyStateVisibility()
+        refreshData()
     }
 }
