@@ -98,4 +98,9 @@ enum Asset {
         static let doneTrackerButton = UIImage(named: "done_tracker")
     }
     
+    enum OnboardingImage {
+        static let blueBackgraundImage = "onboarding_blue_backgraund"
+        static let redBackgraundImage = "onboarding_red_backgraund"
+    }
+    
 }
