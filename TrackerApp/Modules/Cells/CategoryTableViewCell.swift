@@ -61,6 +61,10 @@ final class CategoryTableViewCell: UITableViewCell {
         checkmarkImageView.isHidden = true
         separatorView.isHidden = false
     }
+    
+    func setSelected(_ selected: Bool) {
+        checkmarkImageView.isHidden = !selected
+    }
 }
 
 // MARK: - Private Methods

@@ -19,6 +19,7 @@ final class TrackerOptionsViewController: UIViewController {
     private let mode: TrackerOptionsMode
     var onDaysSelected: (([WeekDay]) -> Void)?
     private var categories: [TrackerCategoryCoreData] = []
+    private var selectedCategory: TrackerCategoryCoreData?
     
     // MARK: - UI
     private lazy var tableView: UITableView = {
@@ -157,11 +158,9 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
             ) as? CategoryTableViewCell else { return UITableViewCell() }
             
             let category = categories[indexPath.row]
-            cell.configure(with: category.name ?? "Без названия")
-            
-            let isLast = indexPath.row == categories.count - 1
-            let isOnly = categories.count == 1
-            cell.setSeparatorHidden(isLast || isOnly)
+            let isSelected = selectedCategory?.name == category.name
+            cell.configure(with: category.name ?? "Без названия", isSelected: isSelected)
+            cell.setSeparatorHidden(indexPath.row == categories.count - 1)
             
             return cell
         }
@@ -199,11 +198,16 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if mode == .categories {
-            // Обработка выбора категории
-            tableView.deselectRow(at: indexPath, animated: true)
-            // Здесь можно добавить логику для выбора категории
+        let selected = categories[indexPath.row]
+        
+        if selectedCategory?.name == selected.name {
+            selectedCategory = nil
+        } else {
+            selectedCategory = selected
         }
+        
+        tableView.reloadData()
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
