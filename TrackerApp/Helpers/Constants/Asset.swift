@@ -96,6 +96,7 @@ enum Asset {
         static let chevronRight = UIImage(named: "chevron")
         static let plusButton = UIImage(named: "plus")
         static let doneTrackerButton = UIImage(named: "done_tracker")
+        static let checkmark = UIImage(named: "checkmark")
     }
     
     enum OnboardingImage {

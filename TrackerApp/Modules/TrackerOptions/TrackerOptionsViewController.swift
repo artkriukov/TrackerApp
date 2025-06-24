@@ -12,7 +12,7 @@ enum TrackerOptionsMode {
     case schedule
     case categories
 }
-#warning("жкран категории или расписания")
+
 final class TrackerOptionsViewController: UIViewController {
     // MARK: - Private Properties
     var selectedDays: [WeekDay] = []
