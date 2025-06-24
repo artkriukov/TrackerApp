@@ -12,7 +12,7 @@ enum TrackerOptionsMode {
     case schedule
     case categories
 }
-
+#warning("жкран категории или расписания")
 final class TrackerOptionsViewController: UIViewController {
     // MARK: - Private Properties
     var selectedDays: [WeekDay] = []
@@ -20,6 +20,7 @@ final class TrackerOptionsViewController: UIViewController {
     var onDaysSelected: (([WeekDay]) -> Void)?
     private var categories: [TrackerCategoryCoreData] = []
     private var selectedCategory: TrackerCategoryCoreData?
+    var onCategorySelected: ((String) -> Void)?
     
     // MARK: - UI
     private lazy var tableView: UITableView = {
@@ -104,10 +105,14 @@ final class TrackerOptionsViewController: UIViewController {
     private func actionButtonTapped() {
         if mode == .schedule {
             onDaysSelected?(selectedDays)
+            dismiss(animated: true)
         } else if mode == .categories {
-#warning("Перезод на жкран создания категории")
+            let categoryEditorVC = CategoryEditorViewController(mode: .create)
+            let navController = UINavigationController(
+                rootViewController: categoryEditorVC
+            )
+            present(navController, animated: true)
         }
-        dismiss(animated: true)
     }
 }
 
@@ -198,16 +203,28 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selected = categories[indexPath.row]
-        
-        if selectedCategory?.name == selected.name {
-            selectedCategory = nil
-        } else {
-            selectedCategory = selected
+        switch mode {
+        case .categories:
+            let selected = categories[indexPath.row]
+            
+            if selectedCategory?.name == selected.name {
+                selectedCategory = nil
+            } else {
+                selectedCategory = selected
+                if let categoryName = selected.name {
+                    onCategorySelected?(categoryName)
+                }
+            }
+            
+            tableView.reloadData()
+            tableView.deselectRow(at: indexPath, animated: true)
+            dismiss(animated: true)
+            
+        case .schedule:
+            
+            tableView.deselectRow(at: indexPath, animated: true)
+            
         }
-        
-        tableView.reloadData()
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

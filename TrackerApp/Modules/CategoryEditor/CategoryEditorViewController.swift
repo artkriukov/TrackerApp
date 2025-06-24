@@ -12,11 +12,12 @@ enum CategoryEditorMode {
     case create
     case edit
 }
-
+#warning("жкран создания категории")
 final class CategoryEditorViewController: UIViewController {
     // MARK: - Private Properties
     private let mode: CategoryEditorMode
     private var editingCategory: TrackerCategoryCoreData?
+    var onCategoryCreated: (() -> Void)?
     
     // MARK: - UI
     

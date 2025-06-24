@@ -241,9 +241,30 @@ final class NewEventViewController: UIViewController {
     }
     
     private func categoryButtonTapped() {
-        let emptyCategoryVC = TrackerOptionsViewController(mode: .categories)
-        let navController = UINavigationController(rootViewController: emptyCategoryVC)
-        present(navController, animated: true)
+        let categories = TrackerCategoryStore.shared.fetchAllCategories()
+        
+        if categories.isEmpty {
+            let categoryEditorVC = CategoryEditorViewController(mode: .create)
+            categoryEditorVC.onCategoryCreated = { [weak self] in
+                self?.categoryButtonTapped()
+            }
+            let navController = UINavigationController(rootViewController: categoryEditorVC)
+            present(navController, animated: true)
+        } else {
+            let trackerOptionsVC = TrackerOptionsViewController(mode: .categories)
+            trackerOptionsVC.onCategorySelected = { [weak self] categoryName in
+                let newConfig = IconTextButton.Configuration(
+                    textLabel: "Категория",
+                    subtitle: categoryName,
+                    image: Asset.Icons.chevronRight,
+                    backgroundColor: .clear
+                )
+                self?.categoryButton.update(configuration: newConfig)
+                self?.updateCreateButtonState()
+            }
+            let navController = UINavigationController(rootViewController: trackerOptionsVC)
+            present(navController, animated: true)
+        }
     }
     
     private func scheduleButtonTapped() {
@@ -276,12 +297,10 @@ final class NewEventViewController: UIViewController {
     private func createTracker() {
         guard let name = trackerTitleTextField.text, !name.isEmpty,
               let emoji = selectedEmoji,
-              let color = selectedColor else {
+              let color = selectedColor,
+              let categoryName = categoryButton.configuration.subtitle ?? TrackerCategoryStore.shared.fetchAllCategories().first?.name else {
             return
         }
-        
-        let categories = TrackerCategoryStore.shared.fetchAllCategories()
-        let category = categories.first?.name ?? "Без категории"
         
         let tracker = Tracker(
             id: UUID(),
@@ -289,17 +308,16 @@ final class NewEventViewController: UIViewController {
             color: color,
             emoji: emoji,
             schedule: mode == .newHabbit ? Set(selectedDays) : [],
-            categoryName: category,
+            categoryName: categoryName,
             createdAt: Date(),
             isPinned: false
         )
         
-        TrackerStore.shared.addTracker(tracker, categoryTitle: category, createdAt: Date())
+        TrackerStore.shared.addTracker(tracker, categoryTitle: categoryName, createdAt: Date())
         
-        delegate?.didCreateTracker(tracker, in: category)
+        delegate?.didCreateTracker(tracker, in: categoryName)
         
-        presentingViewController?.presentingViewController?
-                    .dismiss(animated: true)
+        presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
     private func updateScheduleButton() {
@@ -319,8 +337,9 @@ final class NewEventViewController: UIViewController {
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
         let isScheduleValid = mode == .irregularEvent || !selectedDays.isEmpty
+        let isCategorySelected = categoryButton.configuration.subtitle != nil
         
-        let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid
+        let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid && isCategorySelected
         
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? Asset.MainColors.buttonColor : Asset.MainColors.grayColor
