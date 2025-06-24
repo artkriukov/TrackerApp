@@ -65,12 +65,8 @@ final class CategoryEditorViewController: UIViewController {
         
         do {
             try TrackerCategoryStore.shared.addCategory(name)
-            print("✅ Категория '\(name)' успешно создана")
             TrackerCategoryStore.shared.printAllCategories()
             dismiss(animated: true)
-//            let categories = TrackerCategoryStore.shared.fetchAllCategories()
-//            print("📋 Все категории (\(categories.count)):")
-//            categories.forEach { print("- \($0.name ?? "Без названия")") }
             
         } catch {
             print("Error")

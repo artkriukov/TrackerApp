@@ -244,6 +244,7 @@ final class NewEventViewController: UIViewController {
         let categories = TrackerCategoryStore.shared.fetchAllCategories()
         
         if categories.isEmpty {
+            // Если категорий нет, открываем редактор категорий
             let categoryEditorVC = CategoryEditorViewController(mode: .create)
             categoryEditorVC.onCategoryCreated = { [weak self] in
                 self?.categoryButtonTapped()
@@ -251,8 +252,9 @@ final class NewEventViewController: UIViewController {
             let navController = UINavigationController(rootViewController: categoryEditorVC)
             present(navController, animated: true)
         } else {
-            let trackerOptionsVC = TrackerOptionsViewController(mode: .categories)
-            trackerOptionsVC.onCategorySelected = { [weak self] categoryName in
+           
+            let viewModel = CategorySelectionViewModel()
+            viewModel.onCategorySelected = { [weak self] categoryName in
                 let newConfig = IconTextButton.Configuration(
                     textLabel: "Категория",
                     subtitle: categoryName,
@@ -262,13 +264,15 @@ final class NewEventViewController: UIViewController {
                 self?.categoryButton.update(configuration: newConfig)
                 self?.updateCreateButtonState()
             }
-            let navController = UINavigationController(rootViewController: trackerOptionsVC)
+            
+            let categorySelectionVC = CategorySelectionViewController(viewModel: viewModel)
+            let navController = UINavigationController(rootViewController: categorySelectionVC)
             present(navController, animated: true)
         }
     }
-    
+
     private func scheduleButtonTapped() {
-        let trackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
+        let trackerOptionsVC = ScheduleViewController()
         trackerOptionsVC.selectedDays = selectedDays
         trackerOptionsVC.onDaysSelected = { [weak self] days in
             self?.selectedDays = days
