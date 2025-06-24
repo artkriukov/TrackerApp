@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 enum CategoryEditorMode {
     case create
@@ -15,6 +16,7 @@ enum CategoryEditorMode {
 final class CategoryEditorViewController: UIViewController {
     // MARK: - Private Properties
     private let mode: CategoryEditorMode
+    private var editingCategory: TrackerCategoryCoreData?
     
     // MARK: - UI
     
@@ -53,6 +55,28 @@ final class CategoryEditorViewController: UIViewController {
         applyModeConfiguration()
         setupHideKeyboardOnTap()
     }
+    
+    private func doneButtonTapped() {
+        guard let name = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
+            
+            return
+        }
+        
+        do {
+            try TrackerCategoryStore.shared.addCategory(name)
+            print("✅ Категория '\(name)' успешно создана")
+            TrackerCategoryStore.shared.printAllCategories()
+            dismiss(animated: true)
+//            let categories = TrackerCategoryStore.shared.fetchAllCategories()
+//            print("📋 Все категории (\(categories.count)):")
+//            categories.forEach { print("- \($0.name ?? "Без названия")") }
+            
+        } catch {
+            print("Error")
+        }
+    }
+    
+
 }
 
 private extension CategoryEditorViewController {
@@ -60,6 +84,9 @@ private extension CategoryEditorViewController {
         view.backgroundColor = Asset.MainColors.mainBackgroundColor
         view.addSubview(textField)
         view.addSubview(doneButton)
+        doneButton.addAction(UIAction { _ in
+            self.doneButtonTapped()
+        }, for: .touchUpInside)
     }
     
     func setupConstraints() {

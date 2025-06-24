@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 enum TrackerOptionsMode {
     case schedule
@@ -17,12 +18,13 @@ final class TrackerOptionsViewController: UIViewController {
     var selectedDays: [WeekDay] = []
     private let mode: TrackerOptionsMode
     var onDaysSelected: (([WeekDay]) -> Void)?
+    private var categories: [TrackerCategoryCoreData] = []
+    
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let element = UITableView()
         element.dataSource = self
         element.delegate = self
-        element.isScrollEnabled = false
         element.separatorStyle = .none
         element.rowHeight = UITableView.automaticDimension
         element.estimatedRowHeight = 75
@@ -63,12 +65,14 @@ final class TrackerOptionsViewController: UIViewController {
         setupViews()
         setupConstraints()
         configureForMode()
+        loadCategories()
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         tableView.constraints.first(where: { $0.firstAttribute == .height })?.constant = tableView.contentSize.height
     }
+    
     // MARK: - Private Methods
     private func configureForMode() {
         switch mode {
@@ -83,15 +87,24 @@ final class TrackerOptionsViewController: UIViewController {
             title = "Категория"
             actionButton.setTitle("Добавить категорию", for: .normal)
             tableView.register(
-                ScheduleTableViewCell.self,
-                forCellReuseIdentifier: CollectionViewCellIdentifiers.scheduleTableViewCell
+                CategoryTableViewCell.self,
+                forCellReuseIdentifier: CollectionViewCellIdentifiers.categoryTableViewCell
             )
+        }
+    }
+    
+    private func loadCategories() {
+        if mode == .categories {
+            categories = TrackerCategoryStore.shared.fetchAllCategories()
+            tableView.reloadData()
         }
     }
     
     private func actionButtonTapped() {
         if mode == .schedule {
             onDaysSelected?(selectedDays)
+        } else if mode == .categories {
+#warning("Перезод на жкран создания категории")
         }
         dismiss(animated: true)
     }
@@ -99,11 +112,15 @@ final class TrackerOptionsViewController: UIViewController {
 
 extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        7
+        switch mode {
+        case .schedule:
+            return WeekDay.allCases.count
+        case .categories:
+            return categories.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         switch mode {
         case .schedule:
             guard let cell = tableView.dequeueReusableCell(
@@ -139,6 +156,13 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
                 for: indexPath
             ) as? CategoryTableViewCell else { return UITableViewCell() }
             
+            let category = categories[indexPath.row]
+            cell.configure(with: category.name ?? "Без названия")
+            
+            let isLast = indexPath.row == categories.count - 1
+            let isOnly = categories.count == 1
+            cell.setSeparatorHidden(isLast || isOnly)
+            
             return cell
         }
     }
@@ -173,6 +197,14 @@ extension TrackerOptionsViewController: UITableViewDataSource, UITableViewDelega
         mask.path = path.cgPath
         cell.layer.mask = mask
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if mode == .categories {
+            // Обработка выбора категории
+            tableView.deselectRow(at: indexPath, animated: true)
+            // Здесь можно добавить логику для выбора категории
+        }
+    }
 }
 
 extension TrackerOptionsViewController {
@@ -185,7 +217,6 @@ extension TrackerOptionsViewController {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            
             tableView.topAnchor
                 .constraint(
                     equalTo: view.safeAreaLayoutGuide.topAnchor,

@@ -241,7 +241,7 @@ final class NewEventViewController: UIViewController {
     }
     
     private func categoryButtonTapped() {
-        let emptyCategoryVC = EmptyCategoryViewController()
+        let emptyCategoryVC = TrackerOptionsViewController(mode: .categories)
         let navController = UINavigationController(rootViewController: emptyCategoryVC)
         present(navController, animated: true)
     }
