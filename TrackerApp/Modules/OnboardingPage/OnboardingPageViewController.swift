@@ -16,7 +16,7 @@ final class OnboardingPageViewController: UIViewController {
     
     private lazy var imageView: UIImageView = {
         let element = UIImageView()
-        element.contentMode = .scaleAspectFit
+        element.contentMode = .scaleAspectFill
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
