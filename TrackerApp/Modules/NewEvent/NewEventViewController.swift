@@ -190,8 +190,8 @@ final class NewEventViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 52, height: 52)
         layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 0
         layout.scrollDirection = .vertical
         
         let element = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -241,13 +241,46 @@ final class NewEventViewController: UIViewController {
     }
     
     private func categoryButtonTapped() {
-        let emptyCategoryVC = EmptyCategoryViewController()
-        let navController = UINavigationController(rootViewController: emptyCategoryVC)
+        let categories = TrackerCategoryStore.shared.fetchAllCategories()
+        
+        if categories.isEmpty {
+            let emptyCategoryVC = EmptyCategoryViewController()
+            emptyCategoryVC.onCategoryCreated = { [weak self] in
+                
+                self?.dismiss(animated: true) {
+                
+                    self?.showCategorySelection()
+                }
+            }
+            let navController = UINavigationController(rootViewController: emptyCategoryVC)
+            present(navController, animated: true)
+        } else {
+            showCategorySelection()
+        }
+    }
+
+    private func showCategorySelection() {
+        let viewModel = CategorySelectionViewModel()
+        viewModel.onCategorySelected = { [weak self] categoryName in
+           
+            let newConfig = IconTextButton.Configuration(
+                textLabel: "Категория",
+                subtitle: categoryName,
+                image: Asset.Icons.chevronRight,
+                backgroundColor: .clear
+            )
+            self?.categoryButton.update(configuration: newConfig)
+            self?.updateCreateButtonState()
+            self?.dismiss(animated: true) 
+        }
+        
+        let categorySelectionVC = CategorySelectionViewController(viewModel: viewModel)
+        let navController = UINavigationController(rootViewController: categorySelectionVC)
         present(navController, animated: true)
     }
-    
+
     private func scheduleButtonTapped() {
-        let trackerOptionsVC = TrackerOptionsViewController(mode: .schedule)
+        let trackerOptionsVC = ScheduleViewController()
         trackerOptionsVC.selectedDays = selectedDays
         trackerOptionsVC.onDaysSelected = { [weak self] days in
             self?.selectedDays = days
@@ -276,12 +309,10 @@ final class NewEventViewController: UIViewController {
     private func createTracker() {
         guard let name = trackerTitleTextField.text, !name.isEmpty,
               let emoji = selectedEmoji,
-              let color = selectedColor else {
+              let color = selectedColor,
+              let categoryName = categoryButton.configuration.subtitle ?? TrackerCategoryStore.shared.fetchAllCategories().first?.name else {
             return
         }
-        
-        let categories = TrackerCategoryStore.shared.fetchAllCategories()
-        let category = categories.first?.name ?? "Без категории"
         
         let tracker = Tracker(
             id: UUID(),
@@ -289,17 +320,16 @@ final class NewEventViewController: UIViewController {
             color: color,
             emoji: emoji,
             schedule: mode == .newHabbit ? Set(selectedDays) : [],
-            categoryName: category,
+            categoryName: categoryName,
             createdAt: Date(),
             isPinned: false
         )
         
-        TrackerStore.shared.addTracker(tracker, categoryTitle: category, createdAt: Date())
+        TrackerStore.shared.addTracker(tracker, categoryTitle: categoryName, createdAt: Date())
         
-        delegate?.didCreateTracker(tracker, in: category)
+        delegate?.didCreateTracker(tracker, in: categoryName)
         
-        presentingViewController?.presentingViewController?
-                    .dismiss(animated: true)
+        presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
     private func updateScheduleButton() {
@@ -319,8 +349,9 @@ final class NewEventViewController: UIViewController {
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
         let isScheduleValid = mode == .irregularEvent || !selectedDays.isEmpty
+        let isCategorySelected = categoryButton.configuration.subtitle != nil
         
-        let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid
+        let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid && isCategorySelected
         
         createButton.isEnabled = isEnabled
         createButton.backgroundColor = isEnabled ? Asset.MainColors.buttonColor : Asset.MainColors.grayColor
@@ -420,6 +451,14 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         section == 0 ? Emoji.emojis.count : Colors.colors.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                       layout collectionViewLayout: UICollectionViewLayout,
+                       sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let availableWidth = collectionView.bounds.width - 38
+        let cellWidth = availableWidth / 6
+        return CGSize(width: cellWidth, height: cellWidth)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

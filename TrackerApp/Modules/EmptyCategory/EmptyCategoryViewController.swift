@@ -8,7 +8,7 @@
 import UIKit
 
 final class EmptyCategoryViewController: UIViewController {
-
+    var onCategoryCreated: (() -> Void)?
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
         guard let image = UIImage(named: Asset.Images.trackersEmptyImage) else {
@@ -52,6 +52,13 @@ final class EmptyCategoryViewController: UIViewController {
     
     private func doneButtonTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
+        categoryEditorVC.onCategoryCreated = { [weak self] in
+            
+            self?.dismiss(animated: true) {
+                
+                self?.onCategoryCreated?()
+            }
+        }
         let navController = UINavigationController(rootViewController: categoryEditorVC)
         present(navController, animated: true)
     }

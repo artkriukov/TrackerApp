@@ -11,7 +11,7 @@ final class IconTextButton: UIControl {
     private let textLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let imageView = UIImageView()
-    private var configuration: Configuration
+    private(set) var configuration: Configuration
     
     init(configuration: Configuration) {
         self.configuration = configuration
