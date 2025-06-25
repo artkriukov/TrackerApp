@@ -77,6 +77,12 @@ final class CategorySelectionViewController: UIViewController {
     
     private func addCategoryTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
+        categoryEditorVC.onCategoryCreated = { [weak self] in
+            // После создания новой категории обновляем список
+            self?.viewModel.loadCategories()
+            // Закрываем редактор
+            self?.dismiss(animated: true)
+        }
         let navController = UINavigationController(rootViewController: categoryEditorVC)
         present(navController, animated: true)
     }

@@ -244,31 +244,37 @@ final class NewEventViewController: UIViewController {
         let categories = TrackerCategoryStore.shared.fetchAllCategories()
         
         if categories.isEmpty {
-            // Если категорий нет, открываем редактор категорий
-            let categoryEditorVC = CategoryEditorViewController(mode: .create)
-            categoryEditorVC.onCategoryCreated = { [weak self] in
-                self?.categoryButtonTapped()
+            // Показываем экран с заглушкой
+            let emptyCategoryVC = EmptyCategoryViewController()
+            emptyCategoryVC.onCategoryCreated = { [weak self] in
+                // После создания категории показываем список
+                self?.showCategorySelection()
             }
-            let navController = UINavigationController(rootViewController: categoryEditorVC)
+            let navController = UINavigationController(rootViewController: emptyCategoryVC)
             present(navController, animated: true)
         } else {
-           
-            let viewModel = CategorySelectionViewModel()
-            viewModel.onCategorySelected = { [weak self] categoryName in
-                let newConfig = IconTextButton.Configuration(
-                    textLabel: "Категория",
-                    subtitle: categoryName,
-                    image: Asset.Icons.chevronRight,
-                    backgroundColor: .clear
-                )
-                self?.categoryButton.update(configuration: newConfig)
-                self?.updateCreateButtonState()
-            }
-            
-            let categorySelectionVC = CategorySelectionViewController(viewModel: viewModel)
-            let navController = UINavigationController(rootViewController: categorySelectionVC)
-            present(navController, animated: true)
+            showCategorySelection()
         }
+    }
+
+    private func showCategorySelection() {
+        let viewModel = CategorySelectionViewModel()
+        viewModel.onCategorySelected = { [weak self] categoryName in
+            // Обновляем кнопку и закрываем все экраны
+            let newConfig = IconTextButton.Configuration(
+                textLabel: "Категория",
+                subtitle: categoryName,
+                image: Asset.Icons.chevronRight,
+                backgroundColor: .clear
+            )
+            self?.categoryButton.update(configuration: newConfig)
+            self?.updateCreateButtonState()
+            self?.dismiss(animated: true) // Закрываем все модальные экраны
+        }
+        
+        let categorySelectionVC = CategorySelectionViewController(viewModel: viewModel)
+        let navController = UINavigationController(rootViewController: categorySelectionVC)
+        present(navController, animated: true)
     }
 
     private func scheduleButtonTapped() {

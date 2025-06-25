@@ -59,15 +59,15 @@ final class CategoryEditorViewController: UIViewController {
     
     private func doneButtonTapped() {
         guard let name = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
-            
             return
         }
         
         do {
             try TrackerCategoryStore.shared.addCategory(name)
             TrackerCategoryStore.shared.printAllCategories()
+            // Вызываем колбэк перед закрытием
+            onCategoryCreated?()
             dismiss(animated: true)
-            
         } catch {
             print("Error")
         }
