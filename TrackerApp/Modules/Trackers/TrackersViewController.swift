@@ -50,7 +50,8 @@ final class TrackersViewController: UIViewController {
     private lazy var trackersCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: 167, height: 148)
+        layout.minimumInteritemSpacing = 9
+        layout.minimumLineSpacing = 16
         
         let element = UICollectionView(frame: .zero, collectionViewLayout: layout)
         element.dataSource = self
@@ -322,6 +323,12 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     // Дополнительно можно настроить отступы
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let availableWidth = collectionView.frame.width - 9
+        let cellWidth = availableWidth / 2
+        return CGSize(width: cellWidth, height: 148) 
     }
 }
 

@@ -445,6 +445,14 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
         section == 0 ? Emoji.emojis.count : Colors.colors.count
     }
     
+    func collectionView(_ collectionView: UICollectionView,
+                       layout collectionViewLayout: UICollectionViewLayout,
+                       sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let availableWidth = collectionView.bounds.width - 32 
+        let cellWidth = (availableWidth - 9) / 2
+        return CGSize(width: cellWidth, height: 148)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
             guard let cell = collectionView.dequeueReusableCell(
