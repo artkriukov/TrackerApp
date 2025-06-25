@@ -190,8 +190,8 @@ final class NewEventViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 52, height: 52)
         layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 0
         layout.scrollDirection = .vertical
         
         let element = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -448,9 +448,9 @@ extension NewEventViewController: UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView,
                        layout collectionViewLayout: UICollectionViewLayout,
                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let availableWidth = collectionView.bounds.width - 32 
-        let cellWidth = (availableWidth - 9) / 2
-        return CGSize(width: cellWidth, height: 148)
+        let availableWidth = collectionView.bounds.width - 38
+        let cellWidth = availableWidth / 6
+        return CGSize(width: cellWidth, height: cellWidth)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
