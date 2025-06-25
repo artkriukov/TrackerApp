@@ -78,9 +78,9 @@ final class CategorySelectionViewController: UIViewController {
     private func addCategoryTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
         categoryEditorVC.onCategoryCreated = { [weak self] in
-            // После создания новой категории обновляем список
+            
             self?.viewModel.loadCategories()
-            // Закрываем редактор
+            
             self?.dismiss(animated: true)
         }
         let navController = UINavigationController(rootViewController: categoryEditorVC)
@@ -141,7 +141,15 @@ extension CategorySelectionViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.selectCategory(at: indexPath.row)
-        tableView.deselectRow(at: indexPath, animated: true)
+        
+        tableView.visibleCells.forEach { cell in
+            if let categoryCell = cell as? CategoryTableViewCell,
+               let indexPath = tableView.indexPath(for: cell) {
+                let isSelected = viewModel.isCategorySelected(at: indexPath.row)
+                categoryCell.setSelected(isSelected)
+            }
+        }
+        
         dismiss(animated: true)
     }
 }
