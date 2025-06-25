@@ -101,8 +101,7 @@ extension CategorySelectionViewController: UITableViewDataSource, UITableViewDel
         ) as? CategoryTableViewCell else { return UITableViewCell() }
         
         let category = viewModel.categories[indexPath.row]
-        let isSelected = viewModel.isCategorySelected(at: indexPath.row)
-        cell.configure(with: category.name ?? "Без названия", isSelected: isSelected)
+        cell.configure(with: category.name, isSelected: category.isSelected)
         cell.setSeparatorHidden(indexPath.row == viewModel.categories.count - 1)
         
         return cell

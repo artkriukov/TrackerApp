@@ -8,43 +8,64 @@
 import Foundation
 import CoreData
 
+import Foundation
+import CoreData
+
 final class CategorySelectionViewModel {
-    // MARK: - Output
+    
+    // MARK: - Nested Types
+    struct CategoryViewModel {
+        let name: String
+        let isSelected: Bool
+    }
+    
+    // MARK: - Output Properties
     var categoriesDidChange: (() -> Void)?
     var onCategorySelected: ((String) -> Void)?
     
-    // MARK: - Properties
-    private(set) var categories: [TrackerCategoryCoreData] = [] {
-        didSet {
-            categoriesDidChange?()
-        }
-    }
-    
-    private(set) var selectedCategory: TrackerCategoryCoreData? {
+    // MARK: - Private Properties
+    private var coreDataCategories: [TrackerCategoryCoreData] = []
+    private var selectedCategory: TrackerCategoryCoreData? {
         didSet {
             if let name = selectedCategory?.name {
                 onCategorySelected?(name)
             }
+            updateViewModels()
         }
     }
     
-    // MARK: - Public Methods
+    // MARK: - Public Properties
+    private(set) var categories: [CategoryViewModel] = []
+    
     func loadCategories() {
-        categories = TrackerCategoryStore.shared.fetchAllCategories()
+        do {
+            coreDataCategories = try TrackerCategoryStore.shared.fetchAllCategories()
+            updateViewModels()
+        } catch {
+            print("Ошибка загрузки категорий: \(error.localizedDescription)")
+            coreDataCategories = []
+            updateViewModels()
+        }
     }
     
     func selectCategory(at index: Int) {
-        guard index < categories.count else { return }
-        
-        if selectedCategory?.name == categories[index].name {
-            selectedCategory = nil
-        } else {
-            selectedCategory = categories[index]
-        }
+        guard index < coreDataCategories.count else { return }
+        selectedCategory = coreDataCategories[index]
+    }
+
+    func isCategorySelected(at index: Int) -> Bool {
+        guard index < coreDataCategories.count else { return false }
+        return coreDataCategories[index].name == selectedCategory?.name
     }
     
-    func isCategorySelected(at index: Int) -> Bool {
-        guard index < categories.count else { return false }
-        return selectedCategory?.name == categories[index].name
+    
+    private func updateViewModels() {
+        categories = coreDataCategories.map { category in
+            CategoryViewModel(
+                name: category.name ?? "Без названия",
+                isSelected: category.name == selectedCategory?.name
+            )
+        }
+        categoriesDidChange?()
     }
 }
