@@ -53,9 +53,9 @@ final class EmptyCategoryViewController: UIViewController {
     private func doneButtonTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
         categoryEditorVC.onCategoryCreated = { [weak self] in
-            // Закрываем только редактор категории
+            
             self?.dismiss(animated: true) {
-                // После закрытия редактора вызываем колбэк
+                
                 self?.onCategoryCreated?()
             }
         }

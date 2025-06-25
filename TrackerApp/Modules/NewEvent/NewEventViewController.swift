@@ -246,9 +246,9 @@ final class NewEventViewController: UIViewController {
         if categories.isEmpty {
             let emptyCategoryVC = EmptyCategoryViewController()
             emptyCategoryVC.onCategoryCreated = { [weak self] in
-                // Закрываем экран заглушки
+                
                 self?.dismiss(animated: true) {
-                    // И сразу показываем список категорий
+                
                     self?.showCategorySelection()
                 }
             }
@@ -262,7 +262,7 @@ final class NewEventViewController: UIViewController {
     private func showCategorySelection() {
         let viewModel = CategorySelectionViewModel()
         viewModel.onCategorySelected = { [weak self] categoryName in
-            // Обновляем кнопку и закрываем все экраны
+           
             let newConfig = IconTextButton.Configuration(
                 textLabel: "Категория",
                 subtitle: categoryName,
@@ -271,7 +271,7 @@ final class NewEventViewController: UIViewController {
             )
             self?.categoryButton.update(configuration: newConfig)
             self?.updateCreateButtonState()
-            self?.dismiss(animated: true) // Закрываем все модальные экраны
+            self?.dismiss(animated: true) 
         }
         
         let categorySelectionVC = CategorySelectionViewController(viewModel: viewModel)

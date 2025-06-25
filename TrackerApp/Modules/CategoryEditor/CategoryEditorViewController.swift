@@ -64,7 +64,7 @@ final class CategoryEditorViewController: UIViewController {
         
         do {
             try TrackerCategoryStore.shared.addCategory(name)
-            onCategoryCreated?() // Только вызываем колбэк
+            onCategoryCreated?() 
         } catch {
             print("Error")
         }
