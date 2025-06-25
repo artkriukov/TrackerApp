@@ -13,9 +13,10 @@ protocol OnboardingViewControllerDelegate: AnyObject {
 
 final class OnboardingViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     
+    var onFinish: (() -> Void)?
+    
     private var pageViewController: UIPageViewController?
     private let pageControl = UIPageControl()
-    weak var delegate: OnboardingViewControllerDelegate?
     
     private let pages: [OnboardingPage] = [
         OnboardingPage(
@@ -37,7 +38,7 @@ final class OnboardingViewController: UIViewController, UIPageViewControllerData
         
         button.addAction(
             UIAction { [weak self] _ in
-                self?.skipButtonTapped()
+                self?.onFinish?()
             }, for: .touchUpInside
         )
         return button
@@ -100,25 +101,6 @@ final class OnboardingViewController: UIViewController, UIPageViewControllerData
         pageControl.currentPage = 0
         pageControl.pageIndicatorTintColor = .lightGray
         pageControl.currentPageIndicatorTintColor = .black
-    }
-    
-    private func skipButtonTapped() {
-        UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-        
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
-            return
-        }
-        
-        let mainVC = TabBarViewController()
-        let navController = UINavigationController(rootViewController: mainVC)
-        
-        UIView.transition(with: window,
-                         duration: 0.3,
-                         options: .transitionCrossDissolve,
-                         animations: {
-            window.rootViewController = navController
-        }, completion: nil)
     }
     
     private func viewControllerAtIndex(_ index: Int) -> OnboardingPageViewController? {

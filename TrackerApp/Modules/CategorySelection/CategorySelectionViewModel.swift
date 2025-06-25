@@ -6,10 +6,7 @@
 //
 
 import Foundation
-import CoreData
 
-import Foundation
-import CoreData
 
 final class CategorySelectionViewModel {
     
