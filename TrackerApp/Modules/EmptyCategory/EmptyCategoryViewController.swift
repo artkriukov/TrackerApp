@@ -53,10 +53,11 @@ final class EmptyCategoryViewController: UIViewController {
     private func doneButtonTapped() {
         let categoryEditorVC = CategoryEditorViewController(mode: .create)
         categoryEditorVC.onCategoryCreated = { [weak self] in
-            // После создания категории вызываем колбэк
-            self?.onCategoryCreated?()
-            // Закрываем редактор и себя
-            self?.dismiss(animated: true)
+            // Закрываем только редактор категории
+            self?.dismiss(animated: true) {
+                // После закрытия редактора вызываем колбэк
+                self?.onCategoryCreated?()
+            }
         }
         let navController = UINavigationController(rootViewController: categoryEditorVC)
         present(navController, animated: true)

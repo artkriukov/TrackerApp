@@ -244,11 +244,13 @@ final class NewEventViewController: UIViewController {
         let categories = TrackerCategoryStore.shared.fetchAllCategories()
         
         if categories.isEmpty {
-            // Показываем экран с заглушкой
             let emptyCategoryVC = EmptyCategoryViewController()
             emptyCategoryVC.onCategoryCreated = { [weak self] in
-                // После создания категории показываем список
-                self?.showCategorySelection()
+                // Закрываем экран заглушки
+                self?.dismiss(animated: true) {
+                    // И сразу показываем список категорий
+                    self?.showCategorySelection()
+                }
             }
             let navController = UINavigationController(rootViewController: emptyCategoryVC)
             present(navController, animated: true)

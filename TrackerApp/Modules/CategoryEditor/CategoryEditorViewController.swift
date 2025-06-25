@@ -64,10 +64,7 @@ final class CategoryEditorViewController: UIViewController {
         
         do {
             try TrackerCategoryStore.shared.addCategory(name)
-            TrackerCategoryStore.shared.printAllCategories()
-            // Вызываем колбэк перед закрытием
-            onCategoryCreated?()
-            dismiss(animated: true)
+            onCategoryCreated?() // Только вызываем колбэк
         } catch {
             print("Error")
         }
