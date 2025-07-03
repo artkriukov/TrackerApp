@@ -11,6 +11,7 @@ import CoreData
 enum NewEventMode {
     case newHabbit
     case irregularEvent
+    case edit(Tracker)
 }
 
 protocol NewEventViewControllerDelegate: AnyObject {
@@ -223,6 +224,51 @@ final class NewEventViewController: UIViewController {
         setupViews()
         setupConstraints()
         setupHideKeyboardOnTap()
+        fillFieldsIfNeeded()
+    }
+    
+    private func fillFieldsIfNeeded() {
+        guard case let .edit(tracker) = mode else {
+            checkMode()
+            return
+        }
+        title = "Редактирование привычки"
+        trackerTitleTextField.text = tracker.name
+        selectedEmoji = tracker.emoji
+        selectedColor = tracker.color
+        selectedDays = Array(tracker.schedule)
+        
+        
+        let newConfig = IconTextButton.Configuration(
+            textLabel: "Категория",
+            subtitle: tracker.categoryName,
+            image: Asset.Icons.chevronRight,
+            backgroundColor: .clear
+        )
+        categoryButton.update(configuration: newConfig)
+        updateScheduleButton()
+        updateCreateButtonState()
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.selectEmojiAndColorInCollectionView()
+        }
+    }
+    
+    private func selectEmojiAndColorInCollectionView() {
+        
+        if let selectedEmoji = selectedEmoji,
+           let emojiIndex = Emoji.emojis.firstIndex(of: selectedEmoji) {
+            let indexPath = IndexPath(item: emojiIndex, section: 0)
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        }
+        
+        if let selectedColor = selectedColor,
+           let colorIndex = Colors.colors.firstIndex(where: {
+               $0.toHexString() == selectedColor.toHexString()
+           }) {
+            let indexPath = IndexPath(item: colorIndex, section: 1)
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        }
     }
     
     private func checkMode() {
@@ -233,6 +279,9 @@ final class NewEventViewController: UIViewController {
             title = "Новое нерегулярное событие"
             scheduleButton.isHidden = true
             separatorView.isHidden = true
+        case .edit(_):
+            title = "Редактирование привычки"
+            createButton.setTitle("Cохранить", for: .normal)
         }
     }
     
@@ -308,28 +357,50 @@ final class NewEventViewController: UIViewController {
     
     private func createTracker() {
         guard let name = trackerTitleTextField.text, !name.isEmpty,
-              let emoji = selectedEmoji,
-              let color = selectedColor,
-              let categoryName = categoryButton.configuration.subtitle ?? TrackerCategoryStore.shared.fetchAllCategories().first?.name else {
-            return
-        }
-        
-        let tracker = Tracker(
-            id: UUID(),
-            name: name,
-            color: color,
-            emoji: emoji,
-            schedule: mode == .newHabbit ? Set(selectedDays) : [],
-            categoryName: categoryName,
-            createdAt: Date(),
-            isPinned: false
-        )
-        
-        TrackerStore.shared.addTracker(tracker, categoryTitle: categoryName, createdAt: Date())
-        
-        delegate?.didCreateTracker(tracker, in: categoryName)
-        
-        presentingViewController?.presentingViewController?.dismiss(animated: true)
+                  let emoji = selectedEmoji,
+                  let color = selectedColor,
+                  let categoryName = categoryButton.configuration.subtitle ?? TrackerCategoryStore.shared.fetchAllCategories().first?.name else {
+                return
+            }
+
+            switch mode {
+            case .edit(let oldTracker):
+                
+                let updatedTracker = Tracker(
+                    id: oldTracker.id,
+                    name: name,
+                    color: color,
+                    emoji: emoji,
+                    schedule: Set(selectedDays),
+                    categoryName: categoryName,
+                    createdAt: oldTracker.createdAt,
+                    isPinned: oldTracker.isPinned
+                )
+                TrackerStore.shared.updateTracker(updatedTracker, categoryTitle: categoryName)
+                delegate?.didCreateTracker(updatedTracker, in: categoryName)
+                dismiss(animated: true)
+            case .newHabbit, .irregularEvent:
+                let tracker = Tracker(
+                    id: UUID(),
+                    name: name,
+                    color: color,
+                    emoji: emoji,
+                    schedule: {
+                        if case .newHabbit = mode {
+                            return Set(selectedDays)
+                        } else {
+                            return []
+                        }
+                    }(),
+                    categoryName: categoryName,
+                    createdAt: Date(),
+                    isPinned: false
+                )
+                TrackerStore.shared.addTracker(tracker, categoryTitle: categoryName, createdAt: Date())
+                delegate?.didCreateTracker(tracker, in: categoryName)
+            }
+
+            presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
     
     private func updateScheduleButton() {
@@ -348,7 +419,12 @@ final class NewEventViewController: UIViewController {
         let isTitleValid = !(trackerTitleTextField.text?.isEmpty ?? true) && errorLabel.isHidden
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
-        let isScheduleValid = mode == .irregularEvent || !selectedDays.isEmpty
+        let isIrregular = {
+            if case .irregularEvent = mode { return true }
+            else { return false }
+        }()
+        let isScheduleValid = isIrregular || !selectedDays.isEmpty
+
         let isCategorySelected = categoryButton.configuration.subtitle != nil
         
         let isEnabled = isTitleValid && isEmojiSelected && isColorSelected && isScheduleValid && isCategorySelected

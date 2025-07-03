@@ -288,11 +288,9 @@ final class TrackersViewController: UIViewController {
     }
     
     private func editTracker(_ tracker: Tracker) {
-        let editorVC = CategoryEditorViewController(
-            tracker: tracker,
-            mode: .edit
-        )
-        let nav = UINavigationController(rootViewController: editorVC)
+        let editVC = NewEventViewController(mode: .edit(tracker))
+        editVC.delegate = self
+        let nav = UINavigationController(rootViewController: editVC)
         present(nav, animated: true)
     }
     
