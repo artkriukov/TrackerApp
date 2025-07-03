@@ -13,6 +13,12 @@ final class TrackersViewController: UIViewController {
     // MARK: - Private Properties
     private var completedTrackers: [TrackerRecord] = []
     private var filteredCategories: [TrackerCategory] = []
+    private var currentFilter: TrackerFilter = .all {
+        didSet {
+            applyFilter()
+            updateFilterButtonAppearance()
+        }
+    }
     
     private var categories: [TrackerCategory] = [] {
         didSet {
@@ -26,6 +32,7 @@ final class TrackersViewController: UIViewController {
         }
     }
     
+    private var emptyStateLabel: UILabel?
     // MARK: - UI
     private lazy var emptyStateView: UIStackView = {
         guard let image = UIImage(named: Asset.Images.trackersEmptyImage) else {
@@ -35,6 +42,9 @@ final class TrackersViewController: UIViewController {
             image: image,
             text: "Что будем отслеживать?"
         )
+        if let label = stackView.arrangedSubviews.last as? UILabel {
+            self.emptyStateLabel = label
+        }
         stackView.isHidden = true
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
@@ -75,6 +85,9 @@ final class TrackersViewController: UIViewController {
         element.isHidden = true
         element.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
         element.backgroundColor = Asset.MainColors.blueColor
+        element.addAction(UIAction { _ in
+            self.showFilterModal()
+        }, for: .touchUpInside)
         element.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -105,6 +118,13 @@ final class TrackersViewController: UIViewController {
         updateEmptyStateVisibility()
 
         refreshData()
+        
+        if let saved = UserDefaults.standard.value(forKey: "selectedFilter") as? Int,
+           let filter = TrackerFilter(rawValue: saved) {
+            currentFilter = filter
+        } else {
+            currentFilter = .all
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -125,32 +145,49 @@ final class TrackersViewController: UIViewController {
 
     
     // MARK: - Private Methods
+    
+    private func showFilterModal() {
+        let filterVC = FilterSelectionViewController(selectedFilter: currentFilter)
+        filterVC.delegate = self
+        let nav = UINavigationController(rootViewController: filterVC)
+        present(nav, animated: true)
+    }
+    
     private func filterTrackers(for date: Date) {
-        
         let calendar = Calendar.current
         let weekday = calendar.component(.weekday, from: date)
         let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
         let currentWeekDay = WeekDay.allCases[adjustedWeekday - 1]
-        
-        
-        filteredCategories = categories.compactMap { category in
-            
-            let filteredTrackers = category.trackers.filter { tracker in
-                let contains = tracker.schedule.contains(currentWeekDay)
 
-                return contains
+        let completedIds = completedTrackers
+            .filter { Calendar.current.isDate($0.date, inSameDayAs: date) }
+            .map { $0.trackerId }
+
+        filteredCategories = categories.compactMap { category in
+            let trackers = category.trackers.filter { tracker in
+                let contains = tracker.schedule.contains(currentWeekDay)
+                switch currentFilter {
+                case .all, .today:
+                    return contains
+                case .completed:
+                    return contains && completedIds.contains(tracker.id)
+                case .notCompleted:
+                    return contains && !completedIds.contains(tracker.id)
+                }
             }
-            
-            
-            return filteredTrackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: filteredTrackers)
+            return trackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: trackers)
         }
-        
+
         trackersCollectionView.reloadData()
         updateEmptyStateVisibility()
     }
     
     private func dateChanged() {
         currentDate = datePicker.date
+    }
+    
+    private func setEmptyStateText(_ text: String) {
+        emptyStateLabel?.text = text
     }
     
     private func refreshData() {
@@ -165,10 +202,19 @@ final class TrackersViewController: UIViewController {
     }
     
     private func updateEmptyStateVisibility() {
+        let hasAnyTrackers = !categories.flatMap { $0.trackers }.isEmpty
         let hasTrackers = !filteredCategories.isEmpty
-        emptyStateView.isHidden = hasTrackers
-        filterButton.isHidden = !hasTrackers
+
         trackersCollectionView.isHidden = !hasTrackers
+        filterButton.isHidden = false
+
+        if hasTrackers {
+            emptyStateView.isHidden = true
+        } else {
+            let text = hasAnyTrackers ? "Ничего не найдено" : "Что будем отслеживать?"
+            setEmptyStateText(text)
+            emptyStateView.isHidden = false
+        }
     }
     
     private func toggleTrackerCompletion(_ tracker: Tracker) {
@@ -202,7 +248,58 @@ final class TrackersViewController: UIViewController {
         let navController = UINavigationController(rootViewController: typeSelectionVC)
         present(navController, animated: true)
     }
+    
+    private func updateFilterButtonAppearance() {
+        switch currentFilter {
+        case .all, .today:
+            filterButton.setTitleColor(.white, for: .normal)
+        default:
+            filterButton.setTitleColor(.systemRed, for: .normal)
+        }
+    }
+    
+    private func applyFilter() {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: currentDate)
+        let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
+        let currentWeekDay = WeekDay.allCases[adjustedWeekday - 1]
+
+        let completedIds = completedTrackers
+            .filter { Calendar.current.isDate($0.date, inSameDayAs: currentDate) }
+            .map { $0.trackerId }
+
+        filteredCategories = categories.compactMap { category in
+            let trackers = category.trackers.filter { tracker in
+                let scheduled = tracker.schedule.contains(currentWeekDay)
+                switch currentFilter {
+                case .all, .today:
+                    return scheduled
+                case .completed:
+                    return scheduled && completedIds.contains(tracker.id)
+                case .notCompleted:
+                    return scheduled && !completedIds.contains(tracker.id)
+                }
+            }
+            return trackers.isEmpty ? nil : TrackerCategory(title: category.title, trackers: trackers)
+        }
+
+        trackersCollectionView.reloadData()
+        updateEmptyStateVisibility()
+    }
 }
+
+extension TrackersViewController: FilterSelectionDelegate {
+    func didSelectFilter(_ filter: TrackerFilter) {
+        if filter == .today {
+            let today = Date()
+            currentDate = today
+            datePicker.setDate(today, animated: true)
+        }
+        currentFilter = filter
+        UserDefaults.standard.set(filter.rawValue, forKey: "selectedFilter")
+    }
+}
+
 
 extension TrackersViewController: TrackerCollectionViewCellDelegate {
     func completeTracker(id: String) {
