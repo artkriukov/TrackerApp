@@ -11,7 +11,6 @@ protocol FilterSelectionDelegate: AnyObject {
     func didSelectFilter(_ filter: TrackerFilter)
 }
 
-
 final class FilterSelectionViewController: UIViewController {
     private let filters: [TrackerFilter] = [.all, .today, .completed, .notCompleted]
     private var selectedFilter: TrackerFilter
@@ -28,12 +27,28 @@ final class FilterSelectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = Asset.MainColors.mainBackgroundColor
         title = "Фильтры"
+
+        setupTableView()
+        setupConstraints()
+    }
+
+    private func setupTableView() {
+        tableView.backgroundColor = Asset.MainColors.secondaryBackgroundColor
+        tableView.layer.cornerRadius = 16
+        tableView.layer.masksToBounds = true
+
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.register(FilterCell.self, forCellReuseIdentifier: FilterCell.reuseIdentifier)
+        tableView.rowHeight = 75
+        tableView.separatorStyle = .none
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+    }
+
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -47,21 +62,18 @@ extension FilterSelectionViewController: UITableViewDataSource, UITableViewDeleg
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filters.count
     }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let filter = filters[indexPath.row]
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = filter.title
 
-        // Галочка только для completed/notCompleted
-        if (filter == .completed || filter == .notCompleted), filter == selectedFilter {
-            cell.accessoryType = .checkmark
-            cell.textLabel?.textColor = .systemBlue
-        } else {
-            cell.accessoryType = .none
-            cell.textLabel?.textColor = .label
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: FilterCell.reuseIdentifier, for: indexPath) as? FilterCell else {
+            return UITableViewCell()
         }
+        let filter = filters[indexPath.row]
+        let showCheckmark = (filter == .completed || filter == .notCompleted) && filter == selectedFilter
+        let isLast = indexPath.row == filters.count - 1
+        cell.configure(text: filter.title, showCheckmark: showCheckmark, isLast: isLast)
         return cell
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let filter = filters[indexPath.row]
         delegate?.didSelectFilter(filter)

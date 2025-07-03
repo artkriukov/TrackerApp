@@ -254,7 +254,7 @@ final class TrackersViewController: UIViewController {
         case .all, .today:
             filterButton.setTitleColor(.white, for: .normal)
         default:
-            filterButton.setTitleColor(.systemRed, for: .normal)
+            filterButton.setTitleColor(.systemTeal, for: .normal)
         }
     }
     
