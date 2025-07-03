@@ -40,7 +40,7 @@ final class TrackersViewController: UIViewController {
         }
         let stackView = FactoryUI.shared.makeEmptyStateView(
             image: image,
-            text: "Что будем отслеживать?"
+            text: L10n.emptyStateText
         )
         if let label = stackView.arrangedSubviews.last as? UILabel {
             self.emptyStateLabel = label
@@ -52,7 +52,7 @@ final class TrackersViewController: UIViewController {
     
     private lazy var searchController: UISearchController = {
         let element = UISearchController(searchResultsController: nil)
-        element.searchBar.placeholder = "Поиск"
+        element.searchBar.placeholder = L10n.searchPlaceholder
         element.searchBar.translatesAutoresizingMaskIntoConstraints = false
         return element
     }()
@@ -80,7 +80,7 @@ final class TrackersViewController: UIViewController {
     
     private lazy var filterButton: UIButton = {
         let element = UIButton(type: .custom)
-        element.setTitle("Фильтры", for: .normal)
+        element.setTitle(L10n.filtersButton, for: .normal)
         element.layer.cornerRadius = 16
         element.isHidden = true
         element.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
@@ -96,7 +96,6 @@ final class TrackersViewController: UIViewController {
         let element = UIDatePicker()
         element.datePickerMode = .date
         element.preferredDatePickerStyle = .compact
-        element.locale = Locale(identifier: "ru_RU")
         element.addAction(
             UIAction { [weak self] _ in
                 self?.dateChanged()
@@ -211,7 +210,7 @@ final class TrackersViewController: UIViewController {
         if hasTrackers {
             emptyStateView.isHidden = true
         } else {
-            let text = hasAnyTrackers ? "Ничего не найдено" : "Что будем отслеживать?"
+            let text = hasAnyTrackers ? L10n.notFoundText : L10n.emptyStateText
             setEmptyStateText(text)
             emptyStateView.isHidden = false
         }
@@ -296,14 +295,14 @@ final class TrackersViewController: UIViewController {
     
     private func confirmDeleteTracker(_ tracker: Tracker) {
         let alert = UIAlertController(
-            title: "Уверены, что хотите удалить трекер?",
+            title: L10n.deleteAlertTitle,
             message: nil,
             preferredStyle: .actionSheet
         )
-        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { [weak self] _ in
+        alert.addAction(UIAlertAction(title: L10n.deleteAlertConfirm, style: .destructive, handler: { [weak self] _ in
             self?.deleteTracker(tracker)
         }))
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: L10n.deleteAlertCancel, style: .cancel, handler: nil))
         present(alert, animated: true)
     }
 
@@ -463,12 +462,12 @@ extension TrackersViewController: UICollectionViewDelegate {
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
         return UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in
             let editAction = UIAction(
-                title: "Редактировать"
+                title: L10n.editAction
             ) { [weak self] _ in
                 self?.editTracker(tracker)
             }
             let deleteAction = UIAction(
-                title: "Удалить",
+                title: L10n.deleteAction,
                 attributes: [.destructive]
             ) { [weak self] _ in
                 self?.confirmDeleteTracker(tracker)

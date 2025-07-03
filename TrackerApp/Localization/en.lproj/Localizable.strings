@@ -1,0 +1,22 @@
+/* 
+  Localizable.strings
+  TrackerApp
+
+  Created by Artem Kriukov on 03.07.2025.
+  
+*/
+
+"trackers_title" = "Trackers";
+"filters_button" = "Filters";
+"search_placeholder" = "Search";
+"empty_state_text" = "What would you like to track?";
+"not_found_text" = "Nothing found";
+"edit_action" = "Edit";
+"delete_action" = "Delete";
+"delete_alert_title" = "Are you sure you want to delete the tracker?";
+"delete_alert_confirm" = "Delete";
+"delete_alert_cancel" = "Cancel";
+"day_one" = "day";
+"day_other" = "days";
+"day_few" = "days";
+"statistics_tab" = "Statistics";

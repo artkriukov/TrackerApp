@@ -28,13 +28,13 @@ final class TabBarViewController: UITabBarController {
             configureNavBar(
                 with: trackersVC,
                 screen: .trackers,
-                title: "Трекеры",
+                title: L10n.trackersTitle,
                 image: Asset.Images.tabTrackersIcon
             ),
             configureNavBar(
                 with: statisticsVC,
                 screen: .statistics,
-                title: "Статистика",
+                title: L10n.statisticsTab,
                 image: Asset.Images.tabStatsIcon
             ),
         ]
