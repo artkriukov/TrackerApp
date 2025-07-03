@@ -51,7 +51,10 @@ final class EmptyCategoryViewController: UIViewController {
     // MARK: - Private Properties
     
     private func doneButtonTapped() {
-        let categoryEditorVC = CategoryEditorViewController(mode: .create)
+        let categoryEditorVC = CategoryEditorViewController(
+            tracker: nil,
+            mode: .create
+        )
         categoryEditorVC.onCategoryCreated = { [weak self] in
             
             self?.dismiss(animated: true) {

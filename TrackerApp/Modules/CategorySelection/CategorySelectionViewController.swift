@@ -76,7 +76,10 @@ final class CategorySelectionViewController: UIViewController {
     }
     
     private func addCategoryTapped() {
-        let categoryEditorVC = CategoryEditorViewController(mode: .create)
+        let categoryEditorVC = CategoryEditorViewController(
+            tracker: nil,
+            mode: .create
+        )
         categoryEditorVC.onCategoryCreated = { [weak self] in
             
             self?.viewModel.loadCategories()

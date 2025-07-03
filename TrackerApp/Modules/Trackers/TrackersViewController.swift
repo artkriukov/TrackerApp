@@ -286,6 +286,33 @@ final class TrackersViewController: UIViewController {
         trackersCollectionView.reloadData()
         updateEmptyStateVisibility()
     }
+    
+    private func editTracker(_ tracker: Tracker) {
+        let editorVC = CategoryEditorViewController(
+            tracker: tracker,
+            mode: .edit
+        )
+        let nav = UINavigationController(rootViewController: editorVC)
+        present(nav, animated: true)
+    }
+    
+    private func confirmDeleteTracker(_ tracker: Tracker) {
+        let alert = UIAlertController(
+            title: "Уверены, что хотите удалить трекер?",
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alert.addAction(UIAlertAction(title: "Удалить", style: .destructive, handler: { [weak self] _ in
+            self?.deleteTracker(tracker)
+        }))
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
+        present(alert, animated: true)
+    }
+
+    private func deleteTracker(_ tracker: Tracker) {
+        TrackerStore.shared.deleteTracker(tracker)
+        refreshData()
+    }
 }
 
 extension TrackersViewController: FilterSelectionDelegate {
@@ -426,6 +453,30 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         let availableWidth = collectionView.frame.width - 9
         let cellWidth = availableWidth / 2
         return CGSize(width: cellWidth, height: 148) 
+    }
+}
+
+extension TrackersViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in
+            let editAction = UIAction(
+                title: "Редактировать"
+            ) { [weak self] _ in
+                self?.editTracker(tracker)
+            }
+            let deleteAction = UIAction(
+                title: "Удалить",
+                attributes: [.destructive]
+            ) { [weak self] _ in
+                self?.confirmDeleteTracker(tracker)
+            }
+            return UIMenu(title: "", children: [editAction, deleteAction])
+        }
     }
 }
 
