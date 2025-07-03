@@ -330,6 +330,7 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         guard let uuid = UUID(uuidString: id) else { return }
         let record = TrackerRecord(trackerId: uuid, date: currentDate)
         completedTrackers.append(record)
+        TrackerRecordStore.shared.addRecord(record)
         trackersCollectionView.reloadData()
     }
     
@@ -338,6 +339,7 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
         completedTrackers.removeAll { record in
             record.trackerId == uuid && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
         }
+        TrackerRecordStore.shared.removeRecord(for: uuid, on: currentDate)
         trackersCollectionView.reloadData()
     }
 }
