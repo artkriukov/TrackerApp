@@ -63,14 +63,19 @@ final class CategoryEditorViewController: UIViewController {
         guard let name = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
             return
         }
-        
-        do {
-            try TrackerCategoryStore.shared.addCategory(name)
-            onCategoryCreated?() 
-        } catch {
+
+        switch mode {
+        case .create:
+            do {
+                try TrackerCategoryStore.shared.addCategory(name)
+                onCategoryCreated?()
+            } catch {
+                print("Error")
+            }
+            dismiss(animated: true)
+        case .edit:
             dismiss(animated: true)
         }
-  
     }
     
 
