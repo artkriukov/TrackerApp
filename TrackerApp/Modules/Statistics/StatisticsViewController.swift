@@ -56,7 +56,7 @@ final class StatisticsViewController: UIViewController {
         statsCell.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             statsCell.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            statsCell.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            statsCell.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 77),
             statsCell.heightAnchor.constraint(equalToConstant: 90),
             statsCell.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             statsCell.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
