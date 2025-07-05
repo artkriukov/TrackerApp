@@ -48,7 +48,7 @@ final class TrackerRecordStore {
         
         let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "id == %@", id as CVarArg),
+            NSPredicate(format: "trackerId == %@", id as CVarArg),
             NSPredicate(format: "date >= %@ AND date < %@", startOfDay as CVarArg, nextDay as CVarArg)
         ])
         
@@ -89,7 +89,7 @@ final class TrackerRecordStore {
     func isTrackerCompleted(_ trackerID: UUID, on date: Date) -> Bool {
         let request: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "id == %@", trackerID as CVarArg),
+            NSPredicate(format: "trackerId == %@", trackerID as CVarArg),
             NSPredicate(format: "date == %@", date as CVarArg)
         ])
         

@@ -16,6 +16,7 @@ enum CategoryEditorMode {
 final class CategoryEditorViewController: UIViewController {
     // MARK: - Private Properties
     private let mode: CategoryEditorMode
+    private let tracker: Tracker?
     private var editingCategory: TrackerCategoryCoreData?
     var onCategoryCreated: (() -> Void)?
     
@@ -39,7 +40,8 @@ final class CategoryEditorViewController: UIViewController {
     )
     
     // MARK: - Init
-    init(mode: CategoryEditorMode) {
+    init(tracker: Tracker?, mode: CategoryEditorMode) {
+        self.tracker = tracker
         self.mode = mode
         super.init(nibName: nil, bundle: nil)
     }
@@ -61,12 +63,18 @@ final class CategoryEditorViewController: UIViewController {
         guard let name = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
             return
         }
-        
-        do {
-            try TrackerCategoryStore.shared.addCategory(name)
-            onCategoryCreated?() 
-        } catch {
-            print("Error")
+
+        switch mode {
+        case .create:
+            do {
+                try TrackerCategoryStore.shared.addCategory(name)
+                onCategoryCreated?()
+            } catch {
+                print("Error")
+            }
+            dismiss(animated: true)
+        case .edit:
+            dismiss(animated: true)
         }
     }
     
