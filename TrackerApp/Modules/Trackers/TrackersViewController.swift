@@ -141,11 +141,21 @@ final class TrackersViewController: UIViewController {
         refreshData()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.report(event: "open", screen: "Main")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticsService.report(event: "close", screen: "Main")
+    }
 
     
     // MARK: - Private Methods
     
     private func showFilterModal() {
+        AnalyticsService.report(event: "click", screen: "Main", item: "filter")
         let filterVC = FilterSelectionViewController(selectedFilter: currentFilter)
         filterVC.delegate = self
         let nav = UINavigationController(rootViewController: filterVC)
@@ -243,6 +253,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func addTracker() {
+        AnalyticsService.report(event: "click", screen: "Main", item: "add_track")
         let typeSelectionVC = TrackerTypeSelectionViewController(trackersViewController: self)
         let navController = UINavigationController(rootViewController: typeSelectionVC)
         present(navController, animated: true)
@@ -327,6 +338,7 @@ extension TrackersViewController: FilterSelectionDelegate {
 
 extension TrackersViewController: TrackerCollectionViewCellDelegate {
     func completeTracker(id: String) {
+        AnalyticsService.report(event: "click", screen: "Main", item: "track")
         guard let uuid = UUID(uuidString: id) else { return }
         let record = TrackerRecord(trackerId: uuid, date: currentDate)
         completedTrackers.append(record)
@@ -335,6 +347,7 @@ extension TrackersViewController: TrackerCollectionViewCellDelegate {
     }
     
     func uncompleteTracker(id: String) {
+        AnalyticsService.report(event: "click", screen: "Main", item: "track")
         guard let uuid = UUID(uuidString: id) else { return }
         completedTrackers.removeAll { record in
             record.trackerId == uuid && Calendar.current.isDate(record.date, inSameDayAs: currentDate)
@@ -463,15 +476,12 @@ extension TrackersViewController: UICollectionViewDelegate {
     ) -> UIContextMenuConfiguration? {
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.item]
         return UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in
-            let editAction = UIAction(
-                title: L10n.editAction
-            ) { [weak self] _ in
+            let editAction = UIAction(title: L10n.editAction) { [weak self] _ in
+                AnalyticsService.report(event: "click", screen: "Main", item: "edit")
                 self?.editTracker(tracker)
             }
-            let deleteAction = UIAction(
-                title: L10n.deleteAction,
-                attributes: [.destructive]
-            ) { [weak self] _ in
+            let deleteAction = UIAction(title: L10n.deleteAction, attributes: [.destructive]) { [weak self] _ in
+                AnalyticsService.report(event: "click", screen: "Main", item: "delete")
                 self?.confirmDeleteTracker(tracker)
             }
             return UIMenu(title: "", children: [editAction, deleteAction])
